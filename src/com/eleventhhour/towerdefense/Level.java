@@ -85,4 +85,7 @@ public class Level {
 		return new Vector2f(x / (this.tileWidth * TowerDefense.SCALE),y / (this.tileHeight * TowerDefense.SCALE));
 	}
 	
+	public Vector2f getTileXYPosition(Tile tile) {
+		return null;
+	}
 }
