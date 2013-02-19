@@ -39,7 +39,7 @@ public class Level {
 		
 		int mapWidth = tiledmap.getWidth();
 		int mapHeight = tiledmap.getHeight();
-		
+		System.out.println("");
 		this.tiles = new Tile[mapWidth][mapHeight];
 		
 		for (int i = 0; i < mapWidth; i++) {
