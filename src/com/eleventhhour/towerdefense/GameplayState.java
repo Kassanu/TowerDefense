@@ -24,7 +24,7 @@ public class GameplayState extends BasicGameState {
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		try {
 			this.level.loadMap("res/levels/test.tmx");
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

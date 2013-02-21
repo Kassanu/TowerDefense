@@ -9,12 +9,12 @@
   <image source="../tilesheet.png" width="256" height="320"/>
   <tile id="0">
    <properties>
-    <property name="buildable" value="true"/>
+    <property name="type" value="buildable"/>
    </properties>
   </tile>
   <tile id="1">
    <properties>
-    <property name="buildable" value="false"/>
+    <property name="type" value="path"/>
    </properties>
   </tile>
   <tile id="2">
@@ -24,22 +24,27 @@
     <property name="waypoint" value="true"/>
    </properties>
   </tile>
-  <tile id="4">
+  <tile id="3">
    <properties>
-    <property name="end" value="false"/>
+    <property name="end" value="true"/>
     <property name="start" value="false"/>
     <property name="waypoint" value="true"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="type" value="boundry"/>
    </properties>
   </tile>
  </tileset>
  <layer name="background" width="10" height="10">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC2NkYGBgHMSYiUg80O6kFgYAAGk+U5ABAAA=
+   H4sIAAAAAAAAC2NlYGBgJQIzIWFGHBimlhFJHRMWvbjUMaKx0dWh249NHTaMSx262/CpI+RfXObBMDFhDMIATrEbSZABAAA=
   </data>
  </layer>
  <layer name="Waypoints" width="10" height="10">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC2NgGNyAmQg1LDR3Bf0AAEo4PtWQAQAA
+   H4sIAAAAAAAAC2NgIA4wE6luFGACFhLUAgC1hl+ZkAEAAA==
   </data>
  </layer>
 </map>
