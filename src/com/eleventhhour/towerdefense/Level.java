@@ -3,6 +3,7 @@ package com.eleventhhour.towerdefense;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -66,7 +67,8 @@ public class Level {
 				}
 				
 				//this.tiles[i][j] = new Tile((buildable.equals("true")?true:false), tiledmap.getTileImage(i, j, 0), new Vector2f(i,j));
-				
+				//System.out.println("Level: " + i + "," + j);
+				//System.out.println("Tile: " + this.tiles[i][j].getPosition().toString());
 				//determine if start or end waypoint
 				tileID = tiledmap.getTileId(i, j, 1);
 				
@@ -91,8 +93,6 @@ public class Level {
 		if (this.startpoint == null || this.endpoint == null)
 			throw new Exception("Levels must have a start and end point");
 		
-		((BuildableTile) this.tiles[2][5]).addTower(new MGtower(this.tiles[2][5]));
-		System.out.println(getTileXYPosition(this.tiles[2][5]).toString());
 		findPath();
 	}
 	
@@ -105,16 +105,50 @@ public class Level {
 	 * 
 	 */
 	public void findPath() {
+		ArrayList<Vector2f> visitedNodes = new ArrayList<Vector2f>();
+		ArrayList<Vector2f> listPath = new ArrayList<Vector2f>();
+		Vector2f current = this.startpoint;
+		Vector2f[] walkVectors = {new Vector2f(0,-1), new Vector2f(1,0), new Vector2f(0,1), new Vector2f(-1,0)};
 		
+		
+		while (!current.equals(this.endpoint)) {
+			boolean pathFound = false;
+			for (Vector2f dir : walkVectors) {
+				Vector2f workingCurrent = current.copy().add(dir);
+				if (pathFound) {
+					continue;
+				}
+				
+				Tile tile = this.getTileAt((int)workingCurrent.x, (int)workingCurrent.y);
+				
+				//check if tile is a path, and if true check if we have visited this tile.
+				//if we haven't visited the tile add the tile to listPath and set pathfound to true
+				if (tile.getTileType() == TileType.PATH) {
+					if (!visitedNodes.contains(workingCurrent)) {
+						visitedNodes.add(workingCurrent.copy());
+						listPath.add(workingCurrent.copy());
+						pathFound = true;
+						current = workingCurrent.copy();
+					}
+				}
+			}
+		}
+		
+		
+		this.path = listPath.toArray(new Vector2f[listPath.size()]);
+		System.out.println(Arrays.toString(this.path));
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
 		Input i = gc.getInput();
 		int mx = i.getMouseX();
 		int my = i.getMouseY();
-		System.out.println("MX: " + mx);
-		System.out.println("MY: " + my);
 		this.hoverTile = this.getTilePosition(mx, my);
+		if (i.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+			if (this.tiles[(int)this.hoverTile.x][(int) this.hoverTile.y].getTileType() == TileType.BUILDABLE)
+				if (((BuildableTile) this.tiles[(int)this.hoverTile.x][(int) this.hoverTile.y]).isBuildable())
+					((BuildableTile) this.tiles[(int)this.hoverTile.x][(int) this.hoverTile.y]).addTower(new MGtower(this.tiles[2][5]));
+		}
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -144,10 +178,31 @@ public class Level {
 		}
 	}
 	
+	/**
+	 * getTileAt
+	 * 
+	 * @param x - x position in tile grid
+	 * @param y - y position in tile grid
+	 * @return returns the tile at x,y in the grid
+	 */
+	public Tile getTileAt(int x, int y) {
+		if (this.tiles == null || this.tiles.length < x || this.tiles[0].length < y)
+			return null;
+		
+		return this.tiles[x][y];
+	}
+	
+	/**
+	 * getTile
+	 * @param x - x position on map
+	 * @param y - y position on map
+	 * @return returns the tile that is on the map at x, y
+	 */
 	public Tile getTile(int x, int y) {
 		if (this.tiles == null)
 			return null;
-		return this.tiles[x / (this.tileWidth * TowerDefense.SCALE)][y / (this.tileHeight * TowerDefense.SCALE)];
+		
+		return this.tiles[(int)(x / (this.tileWidth * TowerDefense.SCALE))][(int)(y / (this.tileHeight * TowerDefense.SCALE))];
 	}
 	
 	public Vector2f getTilePosition(int x, int y) {

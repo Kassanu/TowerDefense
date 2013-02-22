@@ -30,7 +30,8 @@ public abstract class Tower {
 		
 	}
 	
-	public void render(GameContainer gc, Graphics g, int x, int y){
-		
+	public void render(GameContainer gc, Graphics g){
+		g.drawRect((this.position.getPosition().x * this.position.tileSize * TowerDefense.SCALE) + ((16 * TowerDefense.SCALE) - 5), (this.position.getPosition().y * this.position.tileSize * TowerDefense.SCALE) + ((16 * TowerDefense.SCALE) - 5), 10, 10);
 	}
+	
 }

@@ -13,17 +13,22 @@ public class GameplayState extends BasicGameState {
 	
 	private int stateId;
 	private Level level;
+	private TowerManager towerManager;
 	
 	public GameplayState(int stateId) {
 		super();
 		this.stateId = stateId;
 		this.level = new Level(TowerDefense.width, TowerDefense.height);
+		this.towerManager = new TowerManager();
 	}
 
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		try {
 			this.level.loadMap("res/levels/test.tmx");
+			Tile tile = this.level.getTileAt(2,5);
+			System.out.println("tile: " + tile.getPosition().toString());
+			this.towerManager.addTower(tile);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -32,11 +37,13 @@ public class GameplayState extends BasicGameState {
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		this.level.render(gc, sbg, g);
+		this.towerManager.render(gc, sbg, g);
 	}
 
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		this.level.update(gc, sbg, delta);
+		this.towerManager.update(gc, sbg, delta);
 	}
 
 	@Override
