@@ -20,11 +20,19 @@ public class TowerManager {
 		this.towers = new HashMap<Integer, Tower>();
 	}
 	
-	public void addTower(Tile pos) {
-		System.out.println("Creating tower at: " + pos.getPosition().toString());
-		MGtower t = new MGtower(pos);
-		towers.put(LASTID++, t);
-		((BuildableTile)pos).addTower(t);
+	public void addTower(Tile tile) {
+		System.out.println("Creating tower at: " + tile.getPosition().toString());
+		MGtower t = new MGtower(LASTID, tile);
+		towers.put(LASTID, t);
+		((BuildableTile)tile).addTower(t);
+		LASTID++;
+	}
+	
+	public void removeTower(Tile tile) {
+		System.out.println("Removing tower at: " + tile.getPosition().toString());
+		int removeId = ((BuildableTile) tile).getTower().getId();
+		towers.remove(removeId);
+		((BuildableTile) tile).removeTower();
 	}
 	
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -35,7 +43,7 @@ public class TowerManager {
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		for (Entry<Integer, Tower> entry : this.towers.entrySet()) {
-	        //System.out.println("Name : " + entry.getKey() + " age " + entry.getValue());
+	        System.out.println("Name : " + entry.getKey() + " age " + entry.getValue());
 		}
 	}
 	

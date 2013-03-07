@@ -36,5 +36,5 @@ public abstract class Tile {
 	public TileType getTileType() {
 		return this.tileType;
 	}
-
+	
 }

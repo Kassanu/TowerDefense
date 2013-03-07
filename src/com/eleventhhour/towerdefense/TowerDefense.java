@@ -25,6 +25,8 @@ public class TowerDefense extends StateBasedGame {
 	public final static int width = 320;
 	public final static int height = 320;
 	public final static int SCALE = 2;
+	public final static int TILESIZE = 32;
+	public final static int SCALEDTILESIZE = SCALE * TILESIZE;
 	
     public TowerDefense() {
         super("Tower Defense");

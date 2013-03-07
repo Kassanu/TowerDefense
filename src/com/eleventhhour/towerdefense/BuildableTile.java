@@ -21,6 +21,10 @@ public class BuildableTile extends Tile {
 		this.tower = null;
 	}
 	
+	public Tower getTower() {
+		return this.tower;
+	}
+	
 	public boolean isBuildable() {
 		return this.tower == null;
 	}

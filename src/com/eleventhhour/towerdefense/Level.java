@@ -140,39 +140,31 @@ public class Level {
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
-		Input i = gc.getInput();
-		int mx = i.getMouseX();
-		int my = i.getMouseY();
-		this.hoverTile = this.getTilePosition(mx, my);
-		if (i.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-			if (this.tiles[(int)this.hoverTile.x][(int) this.hoverTile.y].getTileType() == TileType.BUILDABLE)
-				if (((BuildableTile) this.tiles[(int)this.hoverTile.x][(int) this.hoverTile.y]).isBuildable())
-					((BuildableTile) this.tiles[(int)this.hoverTile.x][(int) this.hoverTile.y]).addTower(new MGtower(this.tiles[2][5]));
-		}
+
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		for (int i = 0; i < this.tiles.length; i++) {
 			for (int j = 0; j < this.tiles[i].length; j++) {
-				this.tiles[i][j].render(gc, g, i * this.tileWidth * TowerDefense.SCALE, j * this.tileHeight * TowerDefense.SCALE);
+				this.tiles[i][j].render(gc, g, i * TowerDefense.SCALEDTILESIZE, j * TowerDefense.SCALEDTILESIZE);
 				if (i == this.hoverTile.x && j == this.hoverTile.y) {
 					if (this.tiles[i][j].getTileType() == TileType.BUILDABLE && ((BuildableTile) this.tiles[i][j]).isBuildable())
 						g.setColor(Color.blue);
 					else
 						g.setColor(Color.red);
-					g.drawRect(i * this.tileWidth * TowerDefense.SCALE, j * this.tileHeight * TowerDefense.SCALE, this.tileWidth * TowerDefense.SCALE - 1, this.tileHeight * TowerDefense.SCALE - 1);
+					g.drawRect(i * this.tileWidth * TowerDefense.SCALE, j * TowerDefense.SCALEDTILESIZE, this.tileWidth * TowerDefense.SCALE - 1, TowerDefense.SCALEDTILESIZE - 1);
 				}
 				
 				if (i == this.startpoint.x && j == this.startpoint.y) {
 					g.setColor(new Color(0,127,4));
 					//g.drawRect(i * this.tileWidth * TowerDefense.SCALE, j * this.tileHeight * TowerDefense.SCALE, this.tileWidth * TowerDefense.SCALE - 1, this.tileHeight * TowerDefense.SCALE - 1);
-					g.drawRoundRect(i * this.tileWidth * TowerDefense.SCALE, j * this.tileHeight * TowerDefense.SCALE, this.tileWidth * TowerDefense.SCALE - 1, this.tileHeight * TowerDefense.SCALE - 1,64);
+					g.drawRoundRect(i * TowerDefense.SCALEDTILESIZE, j * TowerDefense.SCALEDTILESIZE, TowerDefense.SCALEDTILESIZE - 1, TowerDefense.SCALEDTILESIZE - 1,64);
 				}
 				
 				if (i == this.endpoint.x && j == this.endpoint.y) {
 					g.setColor(new Color(255,0,0));
 					//g.drawRect(i * this.tileWidth * TowerDefense.SCALE, j * this.tileHeight * TowerDefense.SCALE, this.tileWidth * TowerDefense.SCALE - 1, this.tileHeight * TowerDefense.SCALE - 1);
-					g.drawRoundRect(i * this.tileWidth * TowerDefense.SCALE, j * this.tileHeight * TowerDefense.SCALE, this.tileWidth * TowerDefense.SCALE - 1, this.tileHeight * TowerDefense.SCALE - 1,64);
+					g.drawRoundRect(i * TowerDefense.SCALEDTILESIZE, j * TowerDefense.SCALEDTILESIZE, TowerDefense.SCALEDTILESIZE - 1, TowerDefense.SCALEDTILESIZE - 1,64);
 				}
 			}
 		}
@@ -202,14 +194,53 @@ public class Level {
 		if (this.tiles == null)
 			return null;
 		
-		return this.tiles[(int)(x / (this.tileWidth * TowerDefense.SCALE))][(int)(y / (this.tileHeight * TowerDefense.SCALE))];
+		return this.tiles[(int)(x / TowerDefense.SCALEDTILESIZE)][(int)(y / TowerDefense.SCALEDTILESIZE)];
+	}
+	
+	public Vector2f getTilePosition(Vector2f vec) {
+		System.out.println(vec.toString());
+		return this.getTilePosition((int) vec.x, (int) vec.y);
 	}
 	
 	public Vector2f getTilePosition(int x, int y) {
-		return new Vector2f(x / (this.tileWidth * TowerDefense.SCALE),y / (this.tileHeight * TowerDefense.SCALE));
+		return new Vector2f(x / TowerDefense.SCALEDTILESIZE,y / TowerDefense.SCALEDTILESIZE);
+	}
+	
+	public Vector2f getTileXYPosition(Vector2f vec) {
+		return this.getTileXYPosition((int) vec.x, (int) vec.y);
 	}
 	
 	public Vector2f getTileXYPosition(Tile tile) {
-		return new Vector2f(tile.position.x * (this.tileWidth * TowerDefense.SCALE),tile.position.y * (this.tileHeight * TowerDefense.SCALE));
+		return this.getTileXYPosition((int) tile.position.x, (int) tile.position.y);
 	}
+
+	public Vector2f getTileXYPosition(int x, int y) {
+		return new Vector2f(x * TowerDefense.SCALEDTILESIZE,y * TowerDefense.SCALEDTILESIZE);
+	}
+	
+	public Vector2f getCenter(Vector2f vec) {
+		return this.getCenter((int)vec.x, (int)vec.y);
+	}
+	
+	public Vector2f getCenter(int x, int y) {
+		Vector2f pos = this.getTileXYPosition(x, y);
+		return new Vector2f(pos.x + TowerDefense.SCALEDTILESIZE / 2, pos.y + TowerDefense.SCALEDTILESIZE / 2);
+	}
+	
+	public void setHover(Vector2f hoverTile) {
+		this.hoverTile = hoverTile;		
+	}
+	
+	public Vector2f getHover() {
+		return this.hoverTile;
+	}
+	
+	public Tile getHoverTile() {
+		return this.tiles[(int) this.hoverTile.x][(int) this.hoverTile.y];
+	}
+
+	public Vector2f requestNextWaypoint(int waypointNumber) {
+		return this.path[waypointNumber].copy();		
+	}
+	
 }
