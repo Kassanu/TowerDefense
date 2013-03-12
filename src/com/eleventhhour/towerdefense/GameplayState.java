@@ -30,7 +30,7 @@ public class GameplayState extends BasicGameState {
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		try {
-			this.level.loadMap("res/levels/test.tmx");
+			this.level.loadMap("res/levels/test2.tmx");
 			Tile tile = this.level.getTileAt(2,5);
 			System.out.println("tile: " + tile.getPosition().toString());
 			//this.towerManager.addTower(tile);

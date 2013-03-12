@@ -15,7 +15,7 @@ public class Enemy {
 	 * 
 	 */
 	private static final double DEFAULTVALUES[][] = {
-		{20.0,5,100.0},
+		{20.0,20,100.0},
 		{20.0,0.5,100.0}
 	};
 	

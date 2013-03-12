@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="30" height="30" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="Test" tilewidth="32" tileheight="32">
+  <properties>
+   <property name="end" value="true"/>
+   <property name="start" value="false"/>
+   <property name="waypoint" value="true"/>
+  </properties>
+  <image source="../tilesheet.png" width="256" height="320"/>
+  <tile id="0">
+   <properties>
+    <property name="type" value="buildable"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="type" value="path"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="end" value="false"/>
+    <property name="start" value="true"/>
+    <property name="waypoint" value="true"/>
+   </properties>
+  </tile>
+  <tile id="3">
+   <properties>
+    <property name="end" value="true"/>
+    <property name="start" value="false"/>
+    <property name="waypoint" value="true"/>
+   </properties>
+  </tile>
+  <tile id="4">
+   <properties>
+    <property name="type" value="boundry"/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="background" width="30" height="30">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC8WXwQqEQAxDZxf8/1+WhRWG0pq0iXgoOnMwfW066rHWOl6I7z8+2/21fiqi9q4f83DFrhvzifquyHSzvBTurG9Rt+rplDvLu9KtuLq8XV2Hj1F9GV8pfkV1R75SuFneyldTHzN+vpsZxcfs/CrcaN5Z3Q43y8nqIs9UPFXeE16UT6ar9hflk/Uj64/C65hjtb/Z2uUrdPag+iu6Ls6JrtJPtc7Ix+x14qtOPae6neh4o3NuKNwxmPeggzs+F733Xdxx7+47x8Vd7b3xT/aLE8+fraMQDgAA
+  </data>
+ </layer>
+ <layer name="Waypoints" width="30" height="30">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC+3NMQ0AAAgDsCXgXzMyxtEaaNIxpRcAAOCTLd4HuqYyVhAOAAA=
+  </data>
+ </layer>
+</map>

@@ -92,8 +92,12 @@ public class Level {
 		
 		if (this.startpoint == null || this.endpoint == null)
 			throw new Exception("Levels must have a start and end point");
-		
+		long begin = System.currentTimeMillis();
 		findPath();
+		long end = System.currentTimeMillis();
+		double total = (end - begin) / 1000f;
+		
+		System.out.println("Took " + total + " seconds");
 	}
 	
 	/**
@@ -110,14 +114,13 @@ public class Level {
 		Vector2f current = this.startpoint;
 		Vector2f[] walkVectors = {new Vector2f(0,-1), new Vector2f(1,0), new Vector2f(0,1), new Vector2f(-1,0)};
 		
-		
 		while (!current.equals(this.endpoint)) {
 			boolean pathFound = false;
 			for (Vector2f dir : walkVectors) {
-				Vector2f workingCurrent = current.copy().add(dir);
 				if (pathFound) {
 					continue;
 				}
+				Vector2f workingCurrent = current.copy().add(dir);
 				
 				Tile tile = this.getTileAt((int)workingCurrent.x, (int)workingCurrent.y);
 				
