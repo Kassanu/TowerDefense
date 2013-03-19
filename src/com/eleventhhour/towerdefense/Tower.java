@@ -6,7 +6,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public abstract class Tower {
 	
-	public final int ID;
+	public final long ID;
 	
 	public Tile position;
 	public Tile[] attackable = null;
@@ -17,8 +17,8 @@ public abstract class Tower {
 	public int cooldown = 0;
 	public String color = "FFFFFF";
 	
-	public Tower(int id, Tile pos){
-		this.ID = id;
+	public Tower(long lASTID, Tile pos){
+		this.ID = lASTID;
 		this.position = pos;
 	}
 	
@@ -38,7 +38,7 @@ public abstract class Tower {
 		g.drawRect((this.position.getPosition().x * this.position.tileSize * TowerDefense.SCALE) + ((16 * TowerDefense.SCALE) - 5), (this.position.getPosition().y * this.position.tileSize * TowerDefense.SCALE) + ((16 * TowerDefense.SCALE) - 5), 10, 10);
 	}
 	
-	public int getId() {
+	public long getId() {
 		return this.ID;
 	}
 }

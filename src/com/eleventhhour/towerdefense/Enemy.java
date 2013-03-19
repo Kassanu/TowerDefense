@@ -16,10 +16,10 @@ public class Enemy {
 	 */
 	private static final double DEFAULTVALUES[][] = {
 		{20.0,20,100.0},
-		{20.0,0.5,100.0}
+		{20.0,40,100.0}
 	};
 	
-	private int _ID;
+	private long _ID;
 	public int health;
 	public float speed;
 	public int reward;
@@ -29,7 +29,32 @@ public class Enemy {
 	int waypointNumber = 0;
 	//Image image;
 	
-	public Enemy(int type, Vector2f position, Vector2f waypoint) {
+	public Enemy() {
+		this._ID = 0;
+		this.health = 0;
+		this.speed = 0;
+		this.reward = 0;
+		this.waypointNumber = 0;
+		this.position = null;
+		this.movement = null;
+		this.waypoint = null;
+	}
+	
+	/**
+	 * This constructor is just for testing, when you allocate an enemy from the pool
+	 * use the setProperties method to set the enemy before adding it to the field
+	 */
+	public Enemy(long id, int type, Vector2f position, Vector2f waypoint) {
+		this._ID = id;
+		this.health = (int) Enemy.DEFAULTVALUES[type][0];
+		this.speed = (float) Enemy.DEFAULTVALUES[type][1];
+		this.reward = (int) Enemy.DEFAULTVALUES[type][2];;
+		this.position = position;
+		this.waypoint = waypoint;
+	}
+	
+	public void setProperties(long id, int type, Vector2f position, Vector2f waypoint) {
+		this._ID = id;
 		this.health = (int) Enemy.DEFAULTVALUES[type][0];
 		this.speed = (float) Enemy.DEFAULTVALUES[type][1];
 		this.reward = (int) Enemy.DEFAULTVALUES[type][2];;
@@ -96,6 +121,10 @@ public class Enemy {
 		g.drawRect(this.position.x - (TowerDefense.SCALEDTILESIZE / 2), this.position.y - (TowerDefense.SCALEDTILESIZE / 2), TowerDefense.SCALEDTILESIZE, TowerDefense.SCALEDTILESIZE);
 		g.drawRect(this.position.x, this.position.y, 2, 2);
 		
+	}
+	
+	public boolean isDead() {
+		return this.health <= 0;
 	}
 	
 }

@@ -17,28 +17,23 @@ public class GameplayState extends BasicGameState {
 	private int stateId;
 	private Level level;
 	private TowerManager towerManager;
-	public Enemy testEnemy;
-	
+	private WaveManager waveManager;
+	private EnemyManager enemyManager;
 	
 	public GameplayState(int stateId) {
 		super();
 		this.stateId = stateId;
 		this.level = new Level(TowerDefense.width, TowerDefense.height);
 		this.towerManager = new TowerManager();
+		this.enemyManager = new EnemyManager(this.level);
 	}
 
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		try {
 			this.level.loadMap("res/levels/test2.tmx");
-			Tile tile = this.level.getTileAt(2,5);
-			System.out.println("tile: " + tile.getPosition().toString());
-			//this.towerManager.addTower(tile);
-			Vector2f enemyStart = this.level.getCenter(this.level.startpoint);
-			Vector2f enemyWaypoint = this.level.getCenter(this.level.path[0]); 
-			System.out.println(enemyStart.toString());
-			System.out.println(enemyWaypoint.toString());
-			this.testEnemy = new Enemy(0,enemyStart, enemyWaypoint);
+			this.waveManager = new WaveManager(1);
+			System.out.println(this.waveManager);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -48,7 +43,7 @@ public class GameplayState extends BasicGameState {
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		this.level.render(gc, sbg, g);
 		this.towerManager.render(gc, sbg, g);
-		this.testEnemy.render(gc, g);
+		this.enemyManager.render(gc, sbg, g);
 	}
 
 	@Override
@@ -77,7 +72,8 @@ public class GameplayState extends BasicGameState {
 		 */
 		this.level.update(gc, sbg, delta);
 		this.towerManager.update(gc, sbg, delta);
-		this.testEnemy.update(gc, sbg, this.level, delta);
+		this.waveManager.update(gc, sbg, this.enemyManager, delta);
+		this.enemyManager.update(gc, sbg, delta);
 	}
 
 	@Override

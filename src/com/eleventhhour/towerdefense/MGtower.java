@@ -2,8 +2,8 @@ package com.eleventhhour.towerdefense;
 
 public class MGtower extends Tower {
 	
-	public MGtower(int id, Tile pos){
-		super(id, pos);
+	public MGtower(long lASTID, Tile pos){
+		super(lASTID, pos);
 		this.cost = 15;
 		this.range = 2;
 		this.damage = 1;

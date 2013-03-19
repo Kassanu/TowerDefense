@@ -11,13 +11,13 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class TowerManager {
 	
-	public static int LASTID = 1;
+	public static long LASTID = 1;
 	
-	HashMap<Integer, Tower> towers;
-	ArrayList<Integer> toBeRemoved;
+	public HashMap<Long, Tower> towers;
+	public ArrayList<Integer> toBeRemoved;
 	
 	public TowerManager() {
-		this.towers = new HashMap<Integer, Tower>();
+		this.towers = new HashMap<Long, Tower>();
 	}
 	
 	public void addTower(Tile tile) {
@@ -30,19 +30,19 @@ public class TowerManager {
 	
 	public void removeTower(Tile tile) {
 		System.out.println("Removing tower at: " + tile.getPosition().toString());
-		int removeId = ((BuildableTile) tile).getTower().getId();
+		long removeId = ((BuildableTile) tile).getTower().getId();
 		towers.remove(removeId);
 		((BuildableTile) tile).removeTower();
 	}
 	
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		for (Entry<Integer, Tower> entry : this.towers.entrySet()) {
+		for (Entry<Long, Tower> entry : this.towers.entrySet()) {
 	        entry.getValue().render(gc, g);
 		}
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
-		for (Entry<Integer, Tower> entry : this.towers.entrySet()) {
+		for (Entry<Long, Tower> entry : this.towers.entrySet()) {
 	        System.out.println("Name : " + entry.getKey() + " age " + entry.getValue());
 		}
 	}
