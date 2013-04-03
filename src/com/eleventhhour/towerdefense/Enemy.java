@@ -60,9 +60,10 @@ public class Enemy {
 		this.reward = (int) Enemy.DEFAULTVALUES[type][2];;
 		this.position = position;
 		this.waypoint = waypoint;
+		this.waypointNumber = 0;
 	}
 	
-	public void update(GameContainer gc, StateBasedGame sbg, Level level, int delta){
+	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta){
 		this.movement = this.waypoint.copy();
 		//System.out.println(this.movement.toString());
 		this.movement = this.movement.sub(this.position);
@@ -75,7 +76,12 @@ public class Enemy {
 		//System.out.println(this.movement.toString());
 		//System.out.println(this.position.toString());
 		if (this.checkAtWaypoint()) {
-			this.waypoint = level.getCenter(level.requestNextWaypoint(++waypointNumber));
+			if (gs.getLevel().isLastWaypoint(this.waypointNumber)) {
+				gs.decreasePlayerHealth();
+				this.health = 0;
+			}
+			else 
+				this.waypoint = gs.getLevel().getCenter(gs.getLevel().requestNextWaypoint(++this.waypointNumber));
 		}
 	}
 	
@@ -123,8 +129,20 @@ public class Enemy {
 		
 	}
 	
+	public void getAttacked(int damage) {
+		this.health -= damage;
+	}
+	
 	public boolean isDead() {
 		return this.health <= 0;
+	}
+
+	@Override
+	public String toString() {
+		return "Enemy [_ID=" + _ID + ", health=" + health + ", speed=" + speed
+				+ ", reward=" + reward + ", position=" + position
+				+ ", movement=" + movement + ", waypoint=" + waypoint
+				+ ", waypointNumber=" + waypointNumber + "]";
 	}
 	
 }

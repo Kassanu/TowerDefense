@@ -112,6 +112,8 @@ public class Level {
 		ArrayList<Vector2f> visitedNodes = new ArrayList<Vector2f>();
 		ArrayList<Vector2f> listPath = new ArrayList<Vector2f>();
 		Vector2f current = this.startpoint;
+		visitedNodes.add(current.copy());
+		listPath.add(current.copy());
 		Vector2f[] walkVectors = {new Vector2f(0,-1), new Vector2f(1,0), new Vector2f(0,1), new Vector2f(-1,0)};
 		
 		while (!current.equals(this.endpoint)) {
@@ -143,7 +145,13 @@ public class Level {
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
-
+		//Tile temp = this.getTileAt(this.hoverTile);
+		//System.out.println(temp.getEnemiesOnTile().toString());
+		for (int i = 0; i < this.tiles.length; i++) {
+			for (int j = 0; j < this.tiles[i].length; j++) {
+				this.tiles[i][j].update(gc, sbg, delta);
+			}
+		}
 	}
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
@@ -188,6 +196,16 @@ public class Level {
 	}
 	
 	/**
+	 * getTileAt
+	 * 
+	 * @param pos - position on the map
+	 * @return returns the tile at x,y in the grid
+	 */
+	public Tile getTileAt(Vector2f pos) {
+		return this.getTileAt((int)pos.x, (int)pos.y);
+	}
+	
+	/**
 	 * getTile
 	 * @param x - x position on map
 	 * @param y - y position on map
@@ -198,6 +216,15 @@ public class Level {
 			return null;
 		
 		return this.tiles[(int)(x / TowerDefense.SCALEDTILESIZE)][(int)(y / TowerDefense.SCALEDTILESIZE)];
+	}
+	
+	/**
+	 * getTile
+	 * @param pos - position in the grid
+	 * @return returns the tile that is on the map at x, y
+	 */
+	public Tile getTile(Vector2f pos) {
+		return this.getTile((int)pos.x, (int)pos.y);
 	}
 	
 	public Vector2f getTilePosition(Vector2f vec) {
@@ -244,6 +271,33 @@ public class Level {
 
 	public Vector2f requestNextWaypoint(int waypointNumber) {
 		return this.path[waypointNumber].copy();		
+	}
+
+	public Tile[] getAttackableTiles(Vector2f position, int range) {
+		ArrayList<Tile> attackable = new ArrayList<Tile>();
+		int from = Math.abs(range) * -1;
+		int to = Math.abs(range); // prevents given a negative range;
+		for (int i = from; i <= to; i++) {
+			for ( int j = from; j <= to; j++) {
+				if ((i+(int)position.x) > 0 && (i+(int)position.x < this.tiles.length) && (j+(int)position.y > 0) && (j+(int)position.y < this.tiles[0].length)) {
+					Tile temp = this.getTileAt(i+(int)position.x, j+(int)position.y);
+					if (temp.getTileType() == TileType.PATH)
+						attackable.add(temp);
+				}
+			}
+		}
+		return attackable.toArray(new Tile[attackable.size()]);
+	}
+
+	public void addEnemyToTile(Enemy enemy) {
+		Tile temp = this.getTile(enemy.position);
+		if (temp != null) {
+			temp.addEnemyToTile(enemy);
+		}
+	}
+
+	public boolean isLastWaypoint(int waypointNumber) {
+		return waypointNumber == this.path.length - 1;
 	}
 	
 }

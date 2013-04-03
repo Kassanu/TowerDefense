@@ -35,18 +35,37 @@ public class EnemyManager {
 		Vector2f enemyStart = this.level.getCenter(this.level.startpoint);
 		Vector2f enemyWaypoint = this.level.getCenter(this.level.path[0]);
 		Enemy enemy = this.enemyPool.allocate();
+		System.out.println(enemy.toString());
 		enemy.setProperties(LASTID, enemyType, enemyStart, enemyWaypoint);
+		System.out.println(enemy.toString());
 		this.addEnemy(enemy);
 	}
 
 	public void addEnemy(Enemy enemy) {
-		enemies.put(LASTID, enemy);
+		this.enemies.put(LASTID, enemy);
 		LASTID++;
 	}
 	
-	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
+	private void removeEnemy(Long enemyId) {
+		Enemy enemy = this.enemies.get(enemyId);
+		this.enemyPool.release(enemy);
+		this.enemies.remove(enemyId);
+	}
+	
+	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {
 		for (Entry<Long, Enemy> enemy : this.enemies.entrySet()) {
-	        enemy.getValue().update(gc, sbg, this.level, delta);
+	        enemy.getValue().update(gc, sbg, gs, delta);
+	        if (enemy.getValue().isDead()) {
+	        	this.toBeRemoved.add(enemy.getKey());
+	        }
+	        else
+	        	level.addEnemyToTile(enemy.getValue());
+		}
+		if (!this.toBeRemoved.isEmpty()) {
+			for (Long enemyId : this.toBeRemoved) {
+				this.removeEnemy(enemyId);
+			}
+			this.toBeRemoved.clear();
 		}
 	}
 

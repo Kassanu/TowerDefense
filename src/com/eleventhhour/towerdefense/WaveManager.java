@@ -58,21 +58,23 @@ public class WaveManager {
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, EnemyManager enemyManager, int delta){
-		if (!this.waveOver) {
-			if (this.waves[this.currentWave].isOver()) {
-				this.waveOver = true;
-				this.nextWaveIn = WaveManager.TIMEBETWEENWAVES;
+		if (this.currentWave < this.waves.length) {
+			if (!this.waveOver) {
+				if (this.waves[this.currentWave].isOver()) {
+					this.waveOver = true;
+					this.nextWaveIn = WaveManager.TIMEBETWEENWAVES;
+				}
+				else {
+					this.waves[this.currentWave].update(gc, sbg, enemyManager, delta);
+				}
 			}
 			else {
-				this.waves[this.currentWave].update(gc, sbg, enemyManager, delta);
-			}
-		}
-		else {
-			//wave is over start counting down until next wave
-			this.nextWaveIn -= delta;
-			if (this.nextWaveIn <= 0) {
-				this.currentWave++;
-				this.waveOver = false;
+				//wave is over start counting down until next wave
+				this.nextWaveIn -= delta;
+				if (this.nextWaveIn <= 0) {
+					this.currentWave++;
+					this.waveOver = false;
+				}
 			}
 		}
 	}

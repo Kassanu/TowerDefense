@@ -22,9 +22,9 @@ public class TowerDefense extends StateBasedGame {
 	
 	public final static int MAINMENUSTATE = 1;
 	public final static int GAMEPLAYSTATE = 2;
-	public final static int width = 960;
-	public final static int height = 960;
-	public final static int SCALE = 1;
+	public final static int width = 320;
+	public final static int height = 320;
+	public final static int SCALE = 2;
 	public final static int TILESIZE = 32;
 	public final static int SCALEDTILESIZE = SCALE * TILESIZE;
 	
