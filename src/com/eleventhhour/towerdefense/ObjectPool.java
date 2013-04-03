@@ -23,8 +23,8 @@ public abstract class ObjectPool {
 	  }
 
 	  protected Object allocate() {
-	    Object localObject = this.thePool.remove(this.thePool.size() - 1);
-	    return localObject;
+	    Object result = this.thePool.remove(this.thePool.size() - 1);
+	    return result;
 	  }
 
 	  protected abstract void fill();
