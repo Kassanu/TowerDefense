@@ -47,8 +47,10 @@ public class TowerDefense extends StateBasedGame {
 
 	@Override
 	public void initStatesList(GameContainer gc) throws SlickException {
-		GameplayState state = new GameplayState(GAMEPLAYSTATE);
-		addState(state);
+		MainMenuState state1 = new MainMenuState(MAINMENUSTATE);
+		GameplayState state2 = new GameplayState(GAMEPLAYSTATE);
+		addState(state1);
+		addState(state2);
 	}
 
 }
