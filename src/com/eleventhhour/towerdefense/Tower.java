@@ -1,6 +1,7 @@
 package com.eleventhhour.towerdefense;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 import org.newdawn.slick.Color;
@@ -87,6 +88,12 @@ public abstract class Tower {
 	public void render(GameContainer gc, Graphics g){
 		g.setColor(Color.blue);
 		g.drawRect((this.position.getPosition().x * this.position.tileSize * TowerDefense.SCALE) + ((16 * TowerDefense.SCALE) - 5), (this.position.getPosition().y * this.position.tileSize * TowerDefense.SCALE) + ((16 * TowerDefense.SCALE) - 5), 10, 10);
+		//render attackable tiles
+		Vector2f attackablePos = null;
+		for (Tile attackableTile : this.attackable) {
+			attackablePos = this.level.getTileWorldPosition(attackableTile); 
+			g.drawRect(attackablePos.x, attackablePos.y, TowerDefense.SCALEDTILESIZE, TowerDefense.SCALEDTILESIZE);
+		}
 	}
 	
 	public long getId() {

@@ -44,7 +44,7 @@ public class GameplayState extends BasicGameState {
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		this.getLevel().render(gc, sbg, g);
+		this.level.render(gc, sbg, g);
 		this.towerManager.render(gc, sbg, g);
 		this.enemyManager.render(gc, sbg, g);
 	}
@@ -79,7 +79,7 @@ public class GameplayState extends BasicGameState {
 		/**
 		 * Update game systems.
 		 */
-		this.getLevel().update(gc, sbg, delta);		
+		this.level.update(gc, sbg, delta);		
 		this.waveManager.update(gc, sbg, this.enemyManager, delta);
 		this.enemyManager.update(gc, sbg, this, delta);
 		this.towerManager.update(gc, sbg, this, delta);

@@ -164,8 +164,8 @@ public class Level {
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
-		//Tile temp = this.getTileAt(this.hoverTile);
-		//System.out.println(temp.getEnemiesOnTile().toString());
+		Tile temp = this.getTileAtGridPosition(this.hoverTile);
+		System.out.println(temp.getEnemiesOnTile().toString());
 		for (int i = 0; i < this.tiles.length; i++) {
 			for (int j = 0; j < this.tiles[i].length; j++) {
 				this.tiles[i][j].update(gc, sbg, delta);
@@ -378,7 +378,7 @@ public class Level {
 	}
 
 	public void addEnemyToTile(Enemy enemy) {
-		Tile temp = this.getTileAtWorldPosition(enemy.getWorldPosition());
+		Tile temp = this.getTileAtWorldPosition(enemy.getCenterPosition());
 		if (temp != null) {
 			temp.addEnemyToTile(enemy);
 		}
