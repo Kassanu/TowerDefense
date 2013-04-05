@@ -7,21 +7,26 @@ import java.util.Map.Entry;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.StateBasedGame;
 
 public class TowerManager {
 	
 	public static long LASTID = 1;
-	
+	public static long LASTBULLETID = 1;
 	public HashMap<Long, Tower> towers;
-	public ArrayList<Integer> toBeRemoved;
+	public HashMap<Long, Bullet> bullets;
+	public ArrayList<Long> toBeRemoved;
+	private BulletPool bulletPool;
 	
 	public TowerManager() {
 		this.towers = new HashMap<Long, Tower>();
+		this.bulletPool = new BulletPool();
+		this.bullets = new HashMap<Long, Bullet>();
+		this.toBeRemoved = new ArrayList<Long>();
 	}
 	
 	public void addTower(Level level, Tile tile) {
-		System.out.println("Creating tower at: " + tile.getPosition().toString());
 		MGtower t = new MGtower(LASTID, tile, level);
 		towers.put(LASTID, t);
 		((BuildableTile)tile).addTower(t);
@@ -29,7 +34,6 @@ public class TowerManager {
 	}
 	
 	public void removeTower(Tile tile) {
-		System.out.println("Removing tower at: " + tile.getPosition().toString());
 		long removeId = ((BuildableTile) tile).getTower().getId();
 		towers.remove(removeId);
 		((BuildableTile) tile).removeTower();
@@ -39,12 +43,48 @@ public class TowerManager {
 		for (Entry<Long, Tower> entry : this.towers.entrySet()) {
 	        entry.getValue().render(gc, g);
 		}
+		for (Entry<Long, Bullet> bullet : this.bullets.entrySet()) {
+			bullet.getValue().render(gc, g);
+		}
 	}
 
-	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
+	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) throws SlickException {
 		for (Entry<Long, Tower> entry : this.towers.entrySet()) {
-			entry.getValue().update(gc, sbg, delta);
+			entry.getValue().update(gc, sbg, gs, delta);
 		}
+		
+		for (Entry<Long, Bullet> bullet : this.bullets.entrySet()) {
+			bullet.getValue().update(gc, sbg, gs, delta);
+	        if (bullet.getValue().isDead()) {
+	        	this.toBeRemoved.add(bullet.getKey());
+	        }
+		}
+		if (!this.toBeRemoved.isEmpty()) {
+			for (Long bulletId : this.toBeRemoved) {
+				this.removeBullet(bulletId);
+			}
+			this.toBeRemoved.clear();
+		}
+	}
+
+	public void spawnBullet(Vector2f worldPosition, Vector2f target) {
+		System.out.println("SPAWNING BULLET!");
+		System.out.println("worldPosition= " + worldPosition.toString() + ", target= " + target.toString());
+		Bullet bullet = this.bulletPool.allocate();
+		bullet.init(LASTBULLETID, worldPosition, target);
+		this.addBullet(bullet);
+	}
+
+	public void addBullet(Bullet bulllet) {
+		this.bullets.put(LASTBULLETID, bulllet);
+		LASTBULLETID++;
+	}
+	
+	private void removeBullet(Long bulletId) {
+		System.out.println("REMOVING BULLET!");
+		Bullet bulllet = this.bullets.get(bulletId);
+		this.bulletPool.release(bulllet);
+		this.bullets.remove(bulletId);
 	}
 	
 }

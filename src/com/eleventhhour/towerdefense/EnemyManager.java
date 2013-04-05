@@ -9,6 +9,8 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.StateBasedGame;
 
+import com.eleventhhour.towerdefense.Collision.CollisionShape;
+
 public class EnemyManager {
 	
 	public static long LASTID = 1;
@@ -32,12 +34,9 @@ public class EnemyManager {
 	}
 	
 	public void spawnEnemy(int enemyType) {
-		Vector2f enemyStart = this.level.getCenter(this.level.startpoint);
-		Vector2f enemyWaypoint = this.level.getCenter(this.level.path[0]);
+		Vector2f enemyStart = this.level.getTileWorldPosition(this.level.startpoint.x, this.level.startpoint.y);
 		Enemy enemy = this.enemyPool.allocate();
-		System.out.println(enemy.toString());
-		enemy.setProperties(LASTID, enemyType, enemyStart, enemyWaypoint);
-		System.out.println(enemy.toString());
+		enemy.init(LASTID, enemyType, enemyStart, this.level.getTileGridPosition(enemyStart), TowerDefense.SCALEDTILESIZE, TowerDefense.SCALEDTILESIZE, 2, this.level.getWaypoint(0));
 		this.addEnemy(enemy);
 	}
 

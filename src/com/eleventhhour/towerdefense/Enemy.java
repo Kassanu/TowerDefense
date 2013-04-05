@@ -1,11 +1,15 @@
 package com.eleventhhour.towerdefense;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.geom.Circle;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.StateBasedGame;
 
-public class Enemy {
+import com.eleventhhour.towerdefense.Collision.CollisionShape;
+
+public class Enemy implements GameObject {
 	
 	/**
 	 * Default settings array for enemies
@@ -19,24 +23,33 @@ public class Enemy {
 		{20.0,40,100.0}
 	};
 	
-	private long _ID;
+	private long ID;
+	protected Collidable collidable;
+	protected Vector2f worldPosition;
+	protected Vector2f centerPosition;
+	protected Vector2f tilePosition;
+	protected int width;
+	protected int height;
+	protected int radius;
 	public int health;
 	public float speed;
 	public int reward;
-	Vector2f position;
 	Vector2f movement;
-	Vector2f waypoint;
+	Waypoint waypoint;
 	int waypointNumber = 0;
 	//Image image;
 	
 	public Enemy() {
-		this._ID = 0;
+		this.ID = 0;
+		this.worldPosition = null;
+		this.tilePosition = null;
+		this.width = 0;
+		this.height = 0;
+		this.radius = 0;
+		this.collidable = null;
 		this.health = 0;
 		this.speed = 0;
 		this.reward = 0;
-		this.waypointNumber = 0;
-		this.position = null;
-		this.movement = null;
 		this.waypoint = null;
 	}
 	
@@ -44,89 +57,65 @@ public class Enemy {
 	 * This constructor is just for testing, when you allocate an enemy from the pool
 	 * use the setProperties method to set the enemy before adding it to the field
 	 */
-	public Enemy(long id, int type, Vector2f position, Vector2f waypoint) {
-		this._ID = id;
+	public Enemy(long id, int type, Vector2f worldPosition, Vector2f tilePosition, int width, int height, int radius, CollisionShape collisionShape, Waypoint waypoint) {
+		this.ID = id;
+		this.worldPosition = worldPosition;
+		this.centerPosition = new Vector2f(0,0);
+		this.tilePosition = tilePosition;
+		this.width = width;
+		this.height = height;
+		this.radius = radius;
 		this.health = (int) Enemy.DEFAULTVALUES[type][0];
 		this.speed = (float) Enemy.DEFAULTVALUES[type][1];
-		this.reward = (int) Enemy.DEFAULTVALUES[type][2];;
-		this.position = position;
+		this.reward = (int) Enemy.DEFAULTVALUES[type][2];
 		this.waypoint = waypoint;
+		this.calcCenterPosition();
+		this.collidable = new Collidable(this, CollisionShape.RECTANGLE, new Vector2f(centerPosition.x - 2, centerPosition.y - 2), 4, 4, 2);
 	}
 	
-	public void setProperties(long id, int type, Vector2f position, Vector2f waypoint) {
-		this._ID = id;
+	public void init(long id, int type, Vector2f worldPosition, Vector2f tilePosition, int width, int height, int radius, Waypoint waypoint) {
+		this.ID = id;
+		this.worldPosition = worldPosition;
+		this.centerPosition = new Vector2f(0,0);
+		this.tilePosition = tilePosition;
+		this.width = width;
+		this.height = height;
+		this.radius = radius;
 		this.health = (int) Enemy.DEFAULTVALUES[type][0];
 		this.speed = (float) Enemy.DEFAULTVALUES[type][1];
 		this.reward = (int) Enemy.DEFAULTVALUES[type][2];;
-		this.position = position;
 		this.waypoint = waypoint;
 		this.waypointNumber = 0;
+		this.calcCenterPosition();
+		this.collidable = new Collidable(this, CollisionShape.RECTANGLE, new Vector2f(centerPosition.x - 2, centerPosition.y - 2), 4, 4, 2);
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta){
-		this.movement = this.waypoint.copy();
-		//System.out.println(this.movement.toString());
-		this.movement = this.movement.sub(this.position);
-		//System.out.println(this.movement.toString());
+		this.movement = this.waypoint.getCollidable().getCenterPosition().copy();
+		this.movement = this.movement.sub(this.centerPosition);
 		this.movement = this.movement.normalise();
-		//System.out.println(this.movement.toString());
 		this.movement = this.movement.scale(this.speed / delta);
-		//System.out.println(this.movement.toString());
-		this.position = this.position.add(this.movement);
-		//System.out.println(this.movement.toString());
-		//System.out.println(this.position.toString());
+		this.worldPosition = this.worldPosition.add(this.movement);
+		this.calcCenterPosition();
+		this.collidable.update(movement);
 		if (this.checkAtWaypoint()) {
 			if (gs.getLevel().isLastWaypoint(this.waypointNumber)) {
 				gs.decreasePlayerHealth();
 				this.health = 0;
 			}
-			else 
-				this.waypoint = gs.getLevel().getCenter(gs.getLevel().requestNextWaypoint(++this.waypointNumber));
+			else {
+				this.waypoint = gs.getLevel().requestNextWaypoint(++this.waypointNumber);
+			}
 		}
 	}
 	
 	public boolean checkAtWaypoint() {
-		int leftEnemy, leftWaypoint;
-	    int rightEnemy, rightWaypoint;
-	    int topEnemy, topWaypoint;
-	    int bottomEnemy, bottomWaypoint;
-	    leftEnemy = (int) this.position.x;
-	    rightEnemy = (int) (this.position.x + 2);
-	    topEnemy = (int) this.position.y;
-	    bottomEnemy = (int) (this.position.y + 2);
-	    leftWaypoint = (int) this.waypoint.x;
-	    rightWaypoint = (int) (this.waypoint.x + 5);
-	    topWaypoint = (int) this.waypoint.y;
-	    bottomWaypoint = (int) (this.waypoint.y + 5);
-	    
-	  //If any of the sides from A are outside of B
-	    if( bottomEnemy <= topWaypoint ) {
-	    
-	        return false;
-	    }
-	    
-	    if( topEnemy >= bottomWaypoint )
-	    {
-	        return false;
-	    }
-	    
-	    if( rightEnemy <= leftWaypoint )
-	    {
-	        return false;
-	    }
-	    
-	    if( leftEnemy >= rightWaypoint )
-	    {
-	        return false;
-	    }
-	    
-		return true;
+		return Collision.collide(this, waypoint);
 	}
 	
 	public void render(GameContainer gc, Graphics g){
-		g.drawRect(this.position.x - (TowerDefense.SCALEDTILESIZE / 2), this.position.y - (TowerDefense.SCALEDTILESIZE / 2), TowerDefense.SCALEDTILESIZE, TowerDefense.SCALEDTILESIZE);
-		g.drawRect(this.position.x, this.position.y, 2, 2);
-		
+		g.setColor(Color.red);
+		this.collidable.render(gc, g);
 	}
 	
 	public void getAttacked(int damage) {
@@ -136,13 +125,53 @@ public class Enemy {
 	public boolean isDead() {
 		return this.health <= 0;
 	}
+	
+	/**
+	 * Calculates the center position
+	 */
+	public void calcCenterPosition() {
+		this.centerPosition.x = (this.width / 2) + this.worldPosition.x;
+		this.centerPosition.y = (this.height / 2) + this.worldPosition.y;
+	}
 
 	@Override
 	public String toString() {
-		return "Enemy [_ID=" + _ID + ", health=" + health + ", speed=" + speed
-				+ ", reward=" + reward + ", position=" + position
+		return "Enemy [_ID=" + ID + ", health=" + health + ", speed=" + speed
+				+ ", reward=" + reward + ", worldPosition=" + worldPosition
 				+ ", movement=" + movement + ", waypoint=" + waypoint
 				+ ", waypointNumber=" + waypointNumber + "]";
+	}
+
+	public long getId() {
+		return this.ID;
+	}
+
+	public Vector2f getWorldPosition() {
+		return this.worldPosition;
+	}
+	
+	public Vector2f getCenterPosition() {
+		return this.centerPosition;
+	}
+
+	public Vector2f getTilePosition() {
+		return this.tilePosition;
+	}
+
+	public int getWidth() {
+		return this.width;
+	}
+
+	public int getHeight() {
+		return this.height;
+	}
+
+	public int getRadius() {
+		return this.radius;
+	}
+
+	public Collidable getCollidable() {
+		return this.collidable;
 	}
 	
 }

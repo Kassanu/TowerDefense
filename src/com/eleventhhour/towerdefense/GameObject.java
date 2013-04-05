@@ -15,19 +15,17 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public interface GameObject {
 	
-	public enum ShapeType {
-		RECTANGLE, CIRCLE
-	}
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta);
 	public void render(GameContainer gc, Graphics g);
-	public void init();
+	public void calcCenterPosition();
 	public long getId();
 	public Vector2f getWorldPosition(); //x,y coords in the game world
+	public Vector2f getCenterPosition();
 	public Vector2f getTilePosition();  //x,y coords of the tile
 	public int getWidth();
 	public int getHeight();
 	public int getRadius();
-	public ShapeType getShape();
+	public Collidable getCollidable();
 	
 }
 

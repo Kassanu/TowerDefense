@@ -5,38 +5,34 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.StateBasedGame;
 
-import com.eleventhhour.towerdefense.GameObject.ShapeType;
+import com.eleventhhour.towerdefense.Collision.CollisionShape;
 
 public class Camera implements GameObject {
 	
 	private long ID;
-	protected ShapeType shapeType = ShapeType.CIRCLE;
+	protected Collidable collidable;
 	protected Vector2f worldPosition; //Cameras top,left position
 	protected Vector2f centerPosition; // Cameras center position
 	protected int width; // Cameras width
 	protected int height; // Cameras height
 	protected int radius;
 	
-	public Camera (long id, Vector2f worldPosition, int width, int height, int radius, ShapeType shapeType) {
+	public Camera (long id, Vector2f worldPosition, int width, int height, int radius) {
 		this.ID = id;
 		this.worldPosition = worldPosition;
 		this.centerPosition = new Vector2f(0,0);
 		this.width = width;
 		this.height = height;
 		this.radius = radius;
-		this.shapeType = shapeType;
-		this.calcCameraCenterPosition();
+		this.calcCenterPosition();
 	}
 	
 	/**
-	 * Calculates the center position of the camera
+	 * Calculates the center position
 	 */
-	public void calcCameraCenterPosition() {
-		float cx, cy;
-		cx = (this.width / 2) + this.worldPosition.x;
-		cy = (this.height / 2) + this.worldPosition.y;
-		this.centerPosition.x = cx;
-		this.centerPosition.y = cy;
+	public void calcCenterPosition() {
+		this.centerPosition.x = (this.width / 2) + this.worldPosition.x;
+		this.centerPosition.y = (this.height / 2) + this.worldPosition.y;
 	}
 	
 	/**
@@ -63,7 +59,7 @@ public class Camera implements GameObject {
 		}
 		
 		if (snapped)
-			this.calcCameraCenterPosition();
+			this.calcCenterPosition();
 	}
 	
 	public void init() {}
@@ -78,6 +74,10 @@ public class Camera implements GameObject {
 
 	public Vector2f getWorldPosition() {
 		return this.worldPosition;
+	}
+	
+	public Vector2f getCenterPosition() {
+		return this.centerPosition;
 	}
 	
 	/*
@@ -99,7 +99,7 @@ public class Camera implements GameObject {
 		return this.radius;
 	}
 
-	public ShapeType getShape() {
-		return this.shapeType;
+	public Collidable getCollidable() {
+		return this.collidable;
 	}
 }

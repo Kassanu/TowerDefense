@@ -14,12 +14,15 @@ import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.tiled.TiledMap;
 
+import com.eleventhhour.towerdefense.Collision.CollisionShape;
+
 public class Level {
 	
 	public Tile[][] tiles;
 	public Vector2f startpoint = null, endpoint = null;
 	public int width, height, tileWidth = 32, tileHeight = 32;
 	public Vector2f hoverTile = new Vector2f(-1,-1);
+	public Waypoint[] waypoints = null;
 	public Vector2f[] path = null;
 	
 	public enum TileType {BUILDABLE, PATH, BOUNDRY};
@@ -110,28 +113,43 @@ public class Level {
 	 */
 	public void findPath() {
 		ArrayList<Vector2f> visitedNodes = new ArrayList<Vector2f>();
+		ArrayList<Waypoint> listWaypoints = new ArrayList<Waypoint>();
 		ArrayList<Vector2f> listPath = new ArrayList<Vector2f>();
 		Vector2f current = this.startpoint;
 		visitedNodes.add(current.copy());
 		listPath.add(current.copy());
+		long waypointId = 0;
+		Vector2f lastDirection = null; //the last direction of walking.  When this changes we are at a corner and it is time to put a waypoint
 		Vector2f[] walkVectors = {new Vector2f(0,-1), new Vector2f(1,0), new Vector2f(0,1), new Vector2f(-1,0)};
 		
 		while (!current.equals(this.endpoint)) {
 			boolean pathFound = false;
 			for (Vector2f dir : walkVectors) {
 				if (pathFound) {
-					continue;
+					continue; //c ontinue through the loop no need to keep checking.
 				}
-				Vector2f workingCurrent = current.copy().add(dir);
+				Vector2f workingCurrent = current.copy().add(dir); // the workingCurrent is the node we are looking at.
 				
-				Tile tile = this.getTileAt((int)workingCurrent.x, (int)workingCurrent.y);
+				Tile tile = this.getTileAtGridPosition(workingCurrent);
 				
-				//check if tile is a path, and if true check if we have visited this tile.
-				//if we haven't visited the tile add the tile to listPath and set pathfound to true
+				// check if tile is a path, and if true check if we have visited this tile.
+				// if we haven't visited the tile add the tile to listPath and set pathfound to true
 				if (tile.getTileType() == TileType.PATH) {
 					if (!visitedNodes.contains(workingCurrent)) {
 						visitedNodes.add(workingCurrent.copy());
+						// if lastDirection isn't null (i.e) we haven't gotten to our first corner yet
+						// AND last direction isn't equal to the new direction we found add it to the way points
+						// What this means is that we have found a corner.
+						if (!(lastDirection == null) && !lastDirection.equals(dir)) {
+							listWaypoints.add(new Waypoint(waypointId++, this.getTileWorldPosition(current.x, current.y), this.getTileGridPosition(current), TowerDefense.SCALEDTILESIZE, TowerDefense.SCALEDTILESIZE, 0));
+						}
+						else if (workingCurrent.equals(this.endpoint)) {
+							// FIXME:	This line needs to be here to add the end point to the waypoints
+							//			This probably should be fixed if there is time and we figure out a better way to do this.
+							listWaypoints.add(new Waypoint(waypointId++, this.getTileWorldPosition(workingCurrent.x, workingCurrent.y), this.getTileGridPosition(workingCurrent), TowerDefense.SCALEDTILESIZE, TowerDefense.SCALEDTILESIZE, 0)); 
+						}
 						listPath.add(workingCurrent.copy());
+						lastDirection = dir.copy();
 						pathFound = true;
 						current = workingCurrent.copy();
 					}
@@ -140,8 +158,9 @@ public class Level {
 		}
 		
 		
+		this.waypoints = listWaypoints.toArray(new Waypoint[listWaypoints.size()]);
 		this.path = listPath.toArray(new Vector2f[listPath.size()]);
-		System.out.println(Arrays.toString(this.path));
+		System.out.println(Arrays.toString(this.waypoints));
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
@@ -179,16 +198,26 @@ public class Level {
 				}
 			}
 		}
+		
+		for (Waypoint waypoint : this.waypoints) {
+			waypoint.render(gc, g);
+		}
+		
 	}
 	
 	/**
-	 * getTileAt
+	 * getTileAtGridPosition
+	 * 
+	 * Returns the tile at the position in the grid passed.
+	 * 
+	 * X,Y corresponds to the tile's GRID POSITION not WORLD POSITION.
+	 * To find a tile at a world position use getTileAtWorldPosition
 	 * 
 	 * @param x - x position in tile grid
 	 * @param y - y position in tile grid
 	 * @return returns the tile at x,y in the grid
 	 */
-	public Tile getTileAt(int x, int y) {
+	public Tile getTileAtGridPosition(int x, int y) {
 		if (this.tiles == null || this.tiles.length < x || this.tiles[0].length < y)
 			return null;
 		
@@ -196,66 +225,125 @@ public class Level {
 	}
 	
 	/**
-	 * getTileAt
+	 * getTileAtGridPosition
 	 * 
-	 * @param pos - position on the map
+	 * Returns the tile at the position in the grid passed.
+	 * 
+	 * pos corresponds to the tile's GRID POSITION not WORLD POSITION.
+	 * To find a tile at a world position use getTileAtWorldPosition
+	 * 
+	 * @param pos - GRID POSITION of tile you wish to get
 	 * @return returns the tile at x,y in the grid
 	 */
-	public Tile getTileAt(Vector2f pos) {
-		return this.getTileAt((int)pos.x, (int)pos.y);
+	public Tile getTileAtGridPosition(Vector2f pos) {
+		if (this.tiles == null || this.tiles.length < pos.x || this.tiles[0].length < pos.y)
+			return null;
+		
+		return this.getTileAtGridPosition((int)pos.x,(int)pos.y);
 	}
 	
 	/**
-	 * getTile
+	 * getTileAtWorldPosition
+	 * 
+	 * Returns the tile at the world position on the map.
+	 * 
+	 * X,Y corresponds to the tile's WORLD POSITION not GRID POSITION
+	 * To find a tile at a grid position use getTileAtGridPosition
+	 * 
 	 * @param x - x position on map
 	 * @param y - y position on map
 	 * @return returns the tile that is on the map at x, y
 	 */
-	public Tile getTile(int x, int y) {
+	public Tile getTileAtWorldPosition(float x, float y) {
 		if (this.tiles == null)
 			return null;
 		
-		return this.tiles[(int)(x / TowerDefense.SCALEDTILESIZE)][(int)(y / TowerDefense.SCALEDTILESIZE)];
+		return this.getTileAtGridPosition((int)(x / TowerDefense.SCALEDTILESIZE), (int)(y / TowerDefense.SCALEDTILESIZE));
 	}
 	
 	/**
-	 * getTile
-	 * @param pos - position in the grid
+	 * getTileAtWorldPosition
+	 * 
+	 * Returns the tile at the world position on the map.
+	 * 
+	 * pos corresponds to the tile's WORLD POSITION not GRID POSITION
+	 * To find a tile at a grid position use getTileAtGridPosition
+	 * 
+	 * @param pos - Vector2f of the WORLD POSITION you wish to get the tile at
 	 * @return returns the tile that is on the map at x, y
 	 */
-	public Tile getTile(Vector2f pos) {
-		return this.getTile((int)pos.x, (int)pos.y);
+	public Tile getTileAtWorldPosition(Vector2f pos) {
+		if (this.tiles == null)
+			return null;
+		
+		return this.getTileAtWorldPosition(pos.x,pos.y);
 	}
 	
-	public Vector2f getTilePosition(Vector2f vec) {
-		System.out.println(vec.toString());
-		return this.getTilePosition((int) vec.x, (int) vec.y);
-	}
-	
-	public Vector2f getTilePosition(int x, int y) {
-		return new Vector2f(x / TowerDefense.SCALEDTILESIZE,y / TowerDefense.SCALEDTILESIZE);
-	}
-	
-	public Vector2f getTileXYPosition(Vector2f vec) {
-		return this.getTileXYPosition((int) vec.x, (int) vec.y);
-	}
-	
-	public Vector2f getTileXYPosition(Tile tile) {
-		return this.getTileXYPosition((int) tile.position.x, (int) tile.position.y);
-	}
-
-	public Vector2f getTileXYPosition(int x, int y) {
+	/**
+	 * getTileWorldPosition
+	 * 
+	 * Returns the tiles TOP LEFT WORLD POSITION in vector form
+	 * 
+	 * @param x - x GRID POSITION of tile
+	 * @param y - y GRID POSITION of tile
+	 * @return a Vector of the tile's TOP LEFT WORLD POSITION
+	 */
+	public Vector2f getTileWorldPosition(float x, float y) {
 		return new Vector2f(x * TowerDefense.SCALEDTILESIZE,y * TowerDefense.SCALEDTILESIZE);
 	}
 	
-	public Vector2f getCenter(Vector2f vec) {
-		return this.getCenter((int)vec.x, (int)vec.y);
+	/**
+	 * getTileWorldPosition
+	 * 
+	 * Returns the tiles TOP LEFT WORLD POSITION in vector form
+	 * 
+	 * @param tile - tile to find position of
+	 * @return a Vector of the tile's TOP LEFT WORLD POSITION
+	 */
+	public Vector2f getTileWorldPosition(Tile tile) {
+		return this.getTileWorldPosition(tile.position.x,tile.position.y);
 	}
 	
+	/**
+	 * getTileGridPosition
+	 * 
+	 * Returns a tiles GRID POSITION from the passed WORLD POSITION
+	 * 
+	 * @param x - WORLD POSITION to find tile's GRID POSITION
+	 * @param y - WORLD POSITION to find tile's GRID POSITION
+	 * @return a vector of the tile's GRID POSITION
+	 */
+	public Vector2f getTileGridPosition(float x, float y) {
+		return new Vector2f(x / TowerDefense.SCALEDTILESIZE,y / TowerDefense.SCALEDTILESIZE);
+	}
+	
+	/**
+	 * getTileGridPosition
+	 * 
+	 * Returns a tiles GRID POSITION from the passed WORLD POSITION
+	 * 
+	 * @param pos - WORLD POSITION to find tile's GRID POSITION
+	 * @return a vector of the tile's GRID POSITION
+	 */
+	public Vector2f getTileGridPosition(Vector2f pos) {
+		return this.getTileGridPosition(pos.x, pos.y);
+	}
+	
+	/**
+	 * getCenter
+	 * 
+	 * This method calculates the tiles center WORLD POSITION
+	 * from it's GRID POSITION
+	 * 
+	 * @param x - GRID POSITION of tile
+	 * @param y - GRID POSITION of tile
+	 * @return a vector containing the center of the tile IN WORLD POSITION
+	 */
 	public Vector2f getCenter(int x, int y) {
-		Vector2f pos = this.getTileXYPosition(x, y);
+		Vector2f pos = this.getTileWorldPosition(x, y);
 		return new Vector2f(pos.x + TowerDefense.SCALEDTILESIZE / 2, pos.y + TowerDefense.SCALEDTILESIZE / 2);
 	}
+	
 	
 	public void setHover(Vector2f hoverTile) {
 		this.hoverTile = hoverTile;		
@@ -269,8 +357,8 @@ public class Level {
 		return this.tiles[(int) this.hoverTile.x][(int) this.hoverTile.y];
 	}
 
-	public Vector2f requestNextWaypoint(int waypointNumber) {
-		return this.path[waypointNumber].copy();		
+	public Waypoint requestNextWaypoint(int waypointNumber) {
+		return this.waypoints[waypointNumber];		
 	}
 
 	public Tile[] getAttackableTiles(Vector2f position, int range) {
@@ -280,7 +368,7 @@ public class Level {
 		for (int i = from; i <= to; i++) {
 			for ( int j = from; j <= to; j++) {
 				if ((i+(int)position.x) > 0 && (i+(int)position.x < this.tiles.length) && (j+(int)position.y > 0) && (j+(int)position.y < this.tiles[0].length)) {
-					Tile temp = this.getTileAt(i+(int)position.x, j+(int)position.y);
+					Tile temp = this.getTileAtGridPosition(i+(int)position.x, j+(int)position.y);
 					if (temp.getTileType() == TileType.PATH)
 						attackable.add(temp);
 				}
@@ -290,14 +378,18 @@ public class Level {
 	}
 
 	public void addEnemyToTile(Enemy enemy) {
-		Tile temp = this.getTile(enemy.position);
+		Tile temp = this.getTileAtWorldPosition(enemy.getWorldPosition());
 		if (temp != null) {
 			temp.addEnemyToTile(enemy);
 		}
 	}
 
 	public boolean isLastWaypoint(int waypointNumber) {
-		return waypointNumber == this.path.length - 1;
+		return waypointNumber == this.waypoints.length - 1;
+	}
+
+	public Waypoint getWaypoint(int i) {
+		return this.waypoints[0];
 	}
 	
 }

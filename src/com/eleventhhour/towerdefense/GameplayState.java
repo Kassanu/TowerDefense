@@ -66,7 +66,7 @@ public class GameplayState extends BasicGameState {
 		Input i = gc.getInput();
 		int mx = i.getMouseX();
 		int my = i.getMouseY();
-		this.getLevel().setHover(this.getLevel().getTilePosition(mx,my));
+		this.getLevel().setHover(this.getLevel().getTileGridPosition(mx,my));
 		if (i.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
 			Tile hoverTile = this.getLevel().getHoverTile();
 			if (hoverTile.getTileType() == TileType.BUILDABLE)
@@ -82,7 +82,7 @@ public class GameplayState extends BasicGameState {
 		this.getLevel().update(gc, sbg, delta);		
 		this.waveManager.update(gc, sbg, this.enemyManager, delta);
 		this.enemyManager.update(gc, sbg, this, delta);
-		this.towerManager.update(gc, sbg, delta);
+		this.towerManager.update(gc, sbg, this, delta);
 	}
 
 	@Override
@@ -102,6 +102,8 @@ public class GameplayState extends BasicGameState {
 		this.playerHealth--;
 	}
 	
-	
+	public TowerManager getTowerManager() {
+		return this.towerManager;
+	}
 	
 }
