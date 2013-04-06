@@ -1,5 +1,7 @@
 package com.eleventhhour.towerdefense;
 
+import java.util.Vector;
+
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Vector2f;
@@ -7,12 +9,22 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import com.eleventhhour.towerdefense.Collision.CollisionShape;
 
+/**
+ * 
+ * The camera class is the viewport for the map.
+ * The worldPosition is where in the game world the camera's top left position is currently at.
+ * Everything rendered in the game must be offset by this position.
+ * 
+ * @author Matt Martucciello
+ *
+ */
+
 public class Camera implements GameObject {
 	
 	private long ID;
 	protected Collidable collidable;
-	protected Vector2f worldPosition; //Cameras top,left position
-	protected Vector2f centerPosition; // Cameras center position
+	protected Vector2f worldPosition; //Cameras top,left position in the game world
+	protected Vector2f centerPosition; // Cameras center position in the game world
 	protected int width; // Cameras width
 	protected int height; // Cameras height
 	protected int radius;
@@ -24,6 +36,7 @@ public class Camera implements GameObject {
 		this.width = width;
 		this.height = height;
 		this.radius = radius;
+		this.collidable = new Collidable(this, CollisionShape.RECTANGLE, worldPosition, width, height, radius);
 		this.calcCenterPosition();
 	}
 	
@@ -64,14 +77,16 @@ public class Camera implements GameObject {
 	
 	public void init() {}
 	
-	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {}
+	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {
+		//this.collidable.update(gc, sbg, gs, delta);
+	}
 
-	public void render(GameContainer gc, Graphics g) {}
+	public void render(GameContainer gc, Graphics g, Vector2f offset) {}
 
 	public long getId() {
 		return this.ID;
 	}
-
+	
 	public Vector2f getWorldPosition() {
 		return this.worldPosition;
 	}
@@ -101,5 +116,14 @@ public class Camera implements GameObject {
 
 	public Collidable getCollidable() {
 		return this.collidable;
+	}
+	
+	public Vector2f getOffset() {
+		return (this.worldPosition.copy()).scale(TowerDefense.SCALE);
+	}
+
+	public void moveCamera(Vector2f move) {
+		this.worldPosition = this.worldPosition.add(move);
+		this.calcCenterPosition();
 	}
 }

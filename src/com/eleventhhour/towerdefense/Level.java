@@ -19,17 +19,19 @@ import com.eleventhhour.towerdefense.Collision.CollisionShape;
 public class Level {
 	
 	public Tile[][] tiles;
-	public Vector2f startpoint = null, endpoint = null;
-	public int width, height, tileWidth = 32, tileHeight = 32;
+	public Vector2f startpoint = null, endpoint = null, screenPosition = null;
+	public int width, height;
 	public Vector2f hoverTile = new Vector2f(-1,-1);
 	public Waypoint[] waypoints = null;
 	public Vector2f[] path = null;
-	
+	public GameplayState gs;
 	public enum TileType {BUILDABLE, PATH, BOUNDRY};
 	
-	public Level(int widht, int height) {
+	public Level(GameplayState gs, int widht, int height, Vector2f screenPosition) {
+		this.gs = gs;
 		this.width = width;
 		this.height = height;
+		this.screenPosition = screenPosition;
 	}
 	
 	public void loadMap(String path) throws Exception {
@@ -141,12 +143,12 @@ public class Level {
 						// AND last direction isn't equal to the new direction we found add it to the way points
 						// What this means is that we have found a corner.
 						if (!(lastDirection == null) && !lastDirection.equals(dir)) {
-							listWaypoints.add(new Waypoint(waypointId++, this.getTileWorldPosition(current.x, current.y), this.getTileGridPosition(current), TowerDefense.SCALEDTILESIZE, TowerDefense.SCALEDTILESIZE, 0));
+							listWaypoints.add(new Waypoint(waypointId++, this.getTileWorldPosition(current.x, current.y), this.getTileGridPosition(current), (TowerDefense.TILESIZE * TowerDefense.SCALE), (TowerDefense.TILESIZE * TowerDefense.SCALE), 0));
 						}
 						else if (workingCurrent.equals(this.endpoint)) {
 							// FIXME:	This line needs to be here to add the end point to the waypoints
 							//			This probably should be fixed if there is time and we figure out a better way to do this.
-							listWaypoints.add(new Waypoint(waypointId++, this.getTileWorldPosition(workingCurrent.x, workingCurrent.y), this.getTileGridPosition(workingCurrent), TowerDefense.SCALEDTILESIZE, TowerDefense.SCALEDTILESIZE, 0)); 
+							listWaypoints.add(new Waypoint(waypointId++, this.getTileWorldPosition(workingCurrent.x, workingCurrent.y), this.getTileGridPosition(workingCurrent), (TowerDefense.TILESIZE * TowerDefense.SCALE), (TowerDefense.TILESIZE * TowerDefense.SCALE), 0)); 
 						}
 						listPath.add(workingCurrent.copy());
 						lastDirection = dir.copy();
@@ -164,8 +166,8 @@ public class Level {
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
-		Tile temp = this.getTileAtGridPosition(this.hoverTile);
-		System.out.println(temp.getEnemiesOnTile().toString());
+		//Tile temp = this.getTileAtGridPosition(this.hoverTile);
+		//System.out.println(temp.getEnemiesOnTile().toString());
 		for (int i = 0; i < this.tiles.length; i++) {
 			for (int j = 0; j < this.tiles[i].length; j++) {
 				this.tiles[i][j].update(gc, sbg, delta);
@@ -173,34 +175,32 @@ public class Level {
 		}
 	}
 
-	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
+	public void render(GameContainer gc, StateBasedGame sbg, Graphics g, Vector2f offset) throws SlickException {
 		for (int i = 0; i < this.tiles.length; i++) {
 			for (int j = 0; j < this.tiles[i].length; j++) {
-				this.tiles[i][j].render(gc, g, i * TowerDefense.SCALEDTILESIZE, j * TowerDefense.SCALEDTILESIZE);
-				if (i == this.hoverTile.x && j == this.hoverTile.y) {
+				this.tiles[i][j].render(gc, g, ((i * TowerDefense.TILESIZE) - offset.x) * TowerDefense.SCALE, ((j * TowerDefense.TILESIZE) - offset.y) * TowerDefense.SCALE);
+				if (i == (int)this.hoverTile.x && j == (int)this.hoverTile.y) {
 					if (this.tiles[i][j].getTileType() == TileType.BUILDABLE && ((BuildableTile) this.tiles[i][j]).isBuildable())
 						g.setColor(Color.blue);
 					else
 						g.setColor(Color.red);
-					g.drawRect(i * this.tileWidth * TowerDefense.SCALE, j * TowerDefense.SCALEDTILESIZE, this.tileWidth * TowerDefense.SCALE - 1, TowerDefense.SCALEDTILESIZE - 1);
+					g.drawRect(((i * TowerDefense.TILESIZE) - offset.x) * TowerDefense.SCALE, ((j * TowerDefense.TILESIZE) - offset.y) * TowerDefense.SCALE, TowerDefense.TILESIZE * TowerDefense.SCALE - 1, (TowerDefense.TILESIZE * TowerDefense.SCALE) - 1);
 				}
 				
 				if (i == this.startpoint.x && j == this.startpoint.y) {
 					g.setColor(new Color(0,127,4));
-					//g.drawRect(i * this.tileWidth * TowerDefense.SCALE, j * this.tileHeight * TowerDefense.SCALE, this.tileWidth * TowerDefense.SCALE - 1, this.tileHeight * TowerDefense.SCALE - 1);
-					g.drawRoundRect(i * TowerDefense.SCALEDTILESIZE, j * TowerDefense.SCALEDTILESIZE, TowerDefense.SCALEDTILESIZE - 1, TowerDefense.SCALEDTILESIZE - 1,64);
+					g.drawRoundRect(((i * TowerDefense.TILESIZE) - offset.x) * TowerDefense.SCALE, ((j * TowerDefense.TILESIZE) - offset.y) * TowerDefense.SCALE, (TowerDefense.TILESIZE * TowerDefense.SCALE) - 1, (TowerDefense.TILESIZE * TowerDefense.SCALE) - 1,64);
 				}
 				
 				if (i == this.endpoint.x && j == this.endpoint.y) {
 					g.setColor(new Color(255,0,0));
-					//g.drawRect(i * this.tileWidth * TowerDefense.SCALE, j * this.tileHeight * TowerDefense.SCALE, this.tileWidth * TowerDefense.SCALE - 1, this.tileHeight * TowerDefense.SCALE - 1);
-					g.drawRoundRect(i * TowerDefense.SCALEDTILESIZE, j * TowerDefense.SCALEDTILESIZE, TowerDefense.SCALEDTILESIZE - 1, TowerDefense.SCALEDTILESIZE - 1,64);
+					g.drawRoundRect(((i * TowerDefense.TILESIZE) - offset.x) * TowerDefense.SCALE, ((j * TowerDefense.TILESIZE) - offset.y) * TowerDefense.SCALE, (TowerDefense.TILESIZE * TowerDefense.SCALE) - 1, (TowerDefense.TILESIZE * TowerDefense.SCALE) - 1,64);
 				}
 			}
 		}
 		
 		for (Waypoint waypoint : this.waypoints) {
-			waypoint.render(gc, g);
+			waypoint.render(gc, g, offset);
 		}
 		
 	}
@@ -258,7 +258,7 @@ public class Level {
 		if (this.tiles == null)
 			return null;
 		
-		return this.getTileAtGridPosition((int)(x / TowerDefense.SCALEDTILESIZE), (int)(y / TowerDefense.SCALEDTILESIZE));
+		return this.getTileAtGridPosition((int)(x / (TowerDefense.TILESIZE * TowerDefense.SCALE)), (int)(y / (TowerDefense.TILESIZE * TowerDefense.SCALE)));
 	}
 	
 	/**
@@ -289,7 +289,7 @@ public class Level {
 	 * @return a Vector of the tile's TOP LEFT WORLD POSITION
 	 */
 	public Vector2f getTileWorldPosition(float x, float y) {
-		return new Vector2f(x * TowerDefense.SCALEDTILESIZE,y * TowerDefense.SCALEDTILESIZE);
+		return new Vector2f(x * (TowerDefense.TILESIZE),y * (TowerDefense.TILESIZE));
 	}
 	
 	/**
@@ -314,7 +314,9 @@ public class Level {
 	 * @return a vector of the tile's GRID POSITION
 	 */
 	public Vector2f getTileGridPosition(float x, float y) {
-		return new Vector2f(x / TowerDefense.SCALEDTILESIZE,y / TowerDefense.SCALEDTILESIZE);
+		Vector2f offset = this.gs.getOffset();
+		System.out.println("OFFSET: " + offset);
+		return new Vector2f((x + (offset.x * TowerDefense.SCALE)) / (TowerDefense.TILESIZE * TowerDefense.SCALE),(y + (offset.y * TowerDefense.SCALE)) / (TowerDefense.TILESIZE * TowerDefense.SCALE));
 	}
 	
 	/**
@@ -341,7 +343,7 @@ public class Level {
 	 */
 	public Vector2f getCenter(int x, int y) {
 		Vector2f pos = this.getTileWorldPosition(x, y);
-		return new Vector2f(pos.x + TowerDefense.SCALEDTILESIZE / 2, pos.y + TowerDefense.SCALEDTILESIZE / 2);
+		return new Vector2f(pos.x + (TowerDefense.TILESIZE) / 2, pos.y + (TowerDefense.TILESIZE) / 2);
 	}
 	
 	
@@ -390,6 +392,10 @@ public class Level {
 
 	public Waypoint getWaypoint(int i) {
 		return this.waypoints[0];
+	}
+
+	public Vector2f getOffset() {
+		return (this.screenPosition.copy()).scale(TowerDefense.SCALE);
 	}
 	
 }

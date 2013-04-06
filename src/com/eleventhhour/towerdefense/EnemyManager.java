@@ -36,7 +36,7 @@ public class EnemyManager {
 	public void spawnEnemy(int enemyType) {
 		Vector2f enemyStart = this.level.getTileWorldPosition(this.level.startpoint.x, this.level.startpoint.y);
 		Enemy enemy = this.enemyPool.allocate();
-		enemy.init(LASTID, enemyType, enemyStart, this.level.getTileGridPosition(enemyStart), TowerDefense.SCALEDTILESIZE, TowerDefense.SCALEDTILESIZE, 2, this.level.getWaypoint(0));
+		enemy.init(LASTID, enemyType, enemyStart, this.level.getTileGridPosition(enemyStart), TowerDefense.TILESIZE, TowerDefense.TILESIZE, 2, this.level.getWaypoint(0));
 		this.addEnemy(enemy);
 	}
 
@@ -68,9 +68,9 @@ public class EnemyManager {
 		}
 	}
 
-	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) {
+	public void render(GameContainer gc, StateBasedGame sbg, Graphics g, Vector2f offset) {
 		for (Entry<Long, Enemy> enemy : this.enemies.entrySet()) {
-	        enemy.getValue().render(gc, g);
+	        enemy.getValue().render(gc, g, offset);
 		}
 	}
 

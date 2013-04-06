@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.MouseListener;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.BasicGameState;
@@ -12,13 +13,14 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import com.eleventhhour.towerdefense.Level.TileType;
 
-public class GameplayState extends BasicGameState {
+public class GameplayState extends BasicGameState implements MouseListener {
 	
 	private int stateId;
 	private Level level;
 	private TowerManager towerManager;
 	private WaveManager waveManager;
 	private EnemyManager enemyManager;
+	private Camera camera;
 	private int playerHealth = 5;
 	private int playerMoney = 0;
 	private int playerScore = 0;
@@ -26,31 +28,35 @@ public class GameplayState extends BasicGameState {
 	public GameplayState(int stateId) {
 		super();
 		this.stateId = stateId;
-		this.setLevel(new Level(TowerDefense.width, TowerDefense.height));
-		this.towerManager = new TowerManager();
-		this.enemyManager = new EnemyManager(this.getLevel());
+		
 	}
 
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		try {
+			this.camera = new Camera(0, new Vector2f(0,0), gc.getWidth(), gc.getHeight(), 0);
+			this.setLevel(new Level(this, TowerDefense.width, TowerDefense.height, new Vector2f(0,0)));
+			this.towerManager = new TowerManager();
+			this.enemyManager = new EnemyManager(this.getLevel());
 			this.getLevel().loadMap("res/levels/test.tmx");
 			this.waveManager = new WaveManager(1);
-			System.out.println(this.waveManager);
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}	
 	}
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		this.level.render(gc, sbg, g);
-		this.towerManager.render(gc, sbg, g);
-		this.enemyManager.render(gc, sbg, g);
+		Vector2f offset = this.getOffset();
+		this.level.render(gc, sbg, g, offset);
+		this.towerManager.render(gc, sbg, g, offset);
+		this.enemyManager.render(gc, sbg, g, offset);
 	}
 
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
+		//update the camera first so all the following calculations will be correct
+		this.camera.update(gc, sbg, this, delta);
 		
 		if (this.playerHealth <= 0) {
 			//trigger game over
@@ -66,12 +72,14 @@ public class GameplayState extends BasicGameState {
 		Input i = gc.getInput();
 		int mx = i.getMouseX();
 		int my = i.getMouseY();
+		System.out.println("[mx,my] = ["+mx+","+my+"]");
 		this.getLevel().setHover(this.getLevel().getTileGridPosition(mx,my));
+		System.out.println(this.getLevel().getHover());
 		if (i.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
 			Tile hoverTile = this.getLevel().getHoverTile();
 			if (hoverTile.getTileType() == TileType.BUILDABLE)
 				if (((BuildableTile)hoverTile).isBuildable())
-					this.towerManager.addTower(this.getLevel(), hoverTile);
+					this.towerManager.addTower(this.level, hoverTile);
 				else if (!((BuildableTile)hoverTile).isBuildable())
 					this.towerManager.removeTower(hoverTile);
 		} 
@@ -104,6 +112,33 @@ public class GameplayState extends BasicGameState {
 	
 	public TowerManager getTowerManager() {
 		return this.towerManager;
+	}
+	
+	public void mouseWheelMoved(int change) {
+		if (change > 0)
+			TowerDefense.SCALE += 1;
+		if (change < 0 && TowerDefense.SCALE > 1)
+			TowerDefense.SCALE -= 1;
+	}
+	
+	public void mouseDragged(int oldx, int oldy, int newx, int newy) {
+		float dx = (newx - oldx) * (-1);
+		float dy = (newy - oldy) * (-1);
+		this.camera.moveCamera(new Vector2f(dx, dy));
+	}
+	
+	/**
+	 * getOffset -
+	 * 
+	 * Calculates the offset of all renderable objects which is the sum of the
+	 * cameras position and the levels position.
+	 * 
+	 * @return A Vector2f of the current render offset
+	 */
+	public Vector2f getOffset() {
+		Vector2f cameraPos = this.camera.getOffset();
+		Vector2f levelPos = this.level.getOffset();
+		return new Vector2f((cameraPos.x + levelPos.x), (cameraPos.y + levelPos.y));
 	}
 	
 }

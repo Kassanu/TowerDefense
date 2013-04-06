@@ -80,9 +80,9 @@ public class Bullet implements GameObject {
 			this.health = 0;
 	}
 
-	public void render(GameContainer gc, Graphics g) {
+	public void render(GameContainer gc, Graphics g, Vector2f offset) {
 		g.setColor(Color.blue);
-		this.collidable.render(gc, g);
+		this.collidable.render(gc, g, offset);
 	}
 	
 	/**

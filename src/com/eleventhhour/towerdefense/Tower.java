@@ -33,7 +33,6 @@ public abstract class Tower {
 		this.worldPosition = this.level.getTileWorldPosition(this.position);
 		this.centerPosition = new Vector2f();
 		this.calcCenterPosition();
-		System.out.println("TOWER POSITION: " + this.worldPosition);
 	}
 	
 	public void setAttackable(Tile[] attack){
@@ -48,8 +47,8 @@ public abstract class Tower {
 	 * Calculates the center position
 	 */
 	public void calcCenterPosition() {
-		this.centerPosition.x = (TowerDefense.SCALEDTILESIZE / 2) + this.worldPosition.x;
-		this.centerPosition.y = (TowerDefense.SCALEDTILESIZE / 2) + this.worldPosition.y;
+		this.centerPosition.x = (TowerDefense.TILESIZE / 2) + this.worldPosition.x;
+		this.centerPosition.y = (TowerDefense.TILESIZE / 2) + this.worldPosition.y;
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta){
@@ -85,14 +84,14 @@ public abstract class Tower {
 		target.getAttacked(this.damage);
 	}
 	
-	public void render(GameContainer gc, Graphics g){
+	public void render(GameContainer gc, Graphics g, Vector2f offset){
 		g.setColor(Color.blue);
-		g.drawRect((this.position.getPosition().x * this.position.tileSize * TowerDefense.SCALE) + ((16 * TowerDefense.SCALE) - 5), (this.position.getPosition().y * this.position.tileSize * TowerDefense.SCALE) + ((16 * TowerDefense.SCALE) - 5), 10, 10);
+		g.drawRect(((this.worldPosition.x - offset.x) * TowerDefense.SCALE) + (((TowerDefense.TILESIZE / 2) * TowerDefense.SCALE) - 5), ((this.worldPosition.y - offset.y ) * TowerDefense.SCALE) + (((TowerDefense.TILESIZE / 2) * TowerDefense.SCALE) - 5), 10, 10);
 		//render attackable tiles
 		Vector2f attackablePos = null;
 		for (Tile attackableTile : this.attackable) {
 			attackablePos = this.level.getTileWorldPosition(attackableTile); 
-			g.drawRect(attackablePos.x, attackablePos.y, TowerDefense.SCALEDTILESIZE, TowerDefense.SCALEDTILESIZE);
+			g.drawRect((attackablePos.x - offset.x) * TowerDefense.SCALE, (attackablePos.y - offset.y) * TowerDefense.SCALE, (TowerDefense.TILESIZE * TowerDefense.SCALE), (TowerDefense.TILESIZE * TowerDefense.SCALE));
 		}
 	}
 	

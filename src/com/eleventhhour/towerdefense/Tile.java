@@ -13,7 +13,6 @@ import com.eleventhhour.towerdefense.Level.TileType;
 public abstract class Tile {
 	
 	public Image tileImage;
-	public int tileSize = 32;
 	public Vector2f position; //position in the tiles array in the level class (NOT ACTUAL XY COORDINATES)
 	public TileType tileType;
 	protected ArrayList<Enemy> enemiesOnTile;
@@ -29,8 +28,8 @@ public abstract class Tile {
 		this.enemiesOnTile.clear();
 	}
 	
-	public void render(GameContainer gc, Graphics g, int x, int y) {
-		this.tileImage.draw(x,y,TowerDefense.SCALE);
+	public void render(GameContainer gc, Graphics g, float f, float h) {
+		this.tileImage.draw(f,h,TowerDefense.SCALE);
 	}
 	
 	public Vector2f getPosition() {

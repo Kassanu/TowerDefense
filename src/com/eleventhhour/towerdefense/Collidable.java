@@ -39,11 +39,11 @@ public class Collidable implements GameObject {
 	}
 	
 	@Override
-	public void render(GameContainer gc, Graphics g) {
+	public void render(GameContainer gc, Graphics g, Vector2f offset) {
 		if (this.collisionShape == CollisionShape.CIRCLE)
-			g.draw(new Circle(this.centerPosition.x,this.centerPosition.y,this.radius));
+			g.draw(new Circle((this.centerPosition.x - offset.x) * TowerDefense.SCALE,(this.centerPosition.y - offset.y) * TowerDefense.SCALE, this.radius * TowerDefense.SCALE));
 		else
-			g.draw(new Rectangle(this.worldPosition.x,this.worldPosition.y, this.width, this.height));
+			g.draw(new Rectangle((this.worldPosition.x - offset.x) * TowerDefense.SCALE,(this.worldPosition.y - offset.y) * TowerDefense.SCALE, this.width * TowerDefense.SCALE, this.height * TowerDefense.SCALE));
 	}
 
 	/**

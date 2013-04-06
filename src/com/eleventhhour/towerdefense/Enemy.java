@@ -4,6 +4,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Circle;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -113,9 +114,10 @@ public class Enemy implements GameObject {
 		return Collision.collide(this, waypoint);
 	}
 	
-	public void render(GameContainer gc, Graphics g){
+	public void render(GameContainer gc, Graphics g, Vector2f offset){
 		g.setColor(Color.red);
-		this.collidable.render(gc, g);
+		this.collidable.render(gc, g, offset);
+		g.draw(new Rectangle((this.worldPosition.x - offset.x) * TowerDefense.SCALE,(this.worldPosition.y - offset.y) * TowerDefense.SCALE, this.width * TowerDefense.SCALE, this.height * TowerDefense.SCALE));
 	}
 	
 	public void getAttacked(int damage) {

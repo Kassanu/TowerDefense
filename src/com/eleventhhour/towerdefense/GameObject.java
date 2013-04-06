@@ -16,7 +16,7 @@ import org.newdawn.slick.state.StateBasedGame;
 public interface GameObject {
 	
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta);
-	public void render(GameContainer gc, Graphics g);
+	public void render(GameContainer gc, Graphics g, Vector2f offset);
 	public void calcCenterPosition();
 	public long getId();
 	public Vector2f getWorldPosition(); //x,y coords in the game world

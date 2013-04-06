@@ -35,9 +35,9 @@ public class Waypoint implements GameObject {
 	
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {}
 
-	public void render(GameContainer gc, Graphics g) {
+	public void render(GameContainer gc, Graphics g, Vector2f offset) {
 		g.setColor(Color.white);
-		this.collidable.render(gc, g);
+		this.collidable.render(gc, g, offset);
 	}
 	
 	/**

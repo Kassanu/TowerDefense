@@ -24,9 +24,9 @@ public class TowerDefense extends StateBasedGame {
 	public final static int GAMEPLAYSTATE = 2;
 	public final static int width = 320;
 	public final static int height = 320;
-	public final static int SCALE = 2;
 	public final static int TILESIZE = 32;
-	public final static int SCALEDTILESIZE = SCALE * TILESIZE;
+	public static int SCALE = 1; 	//RENDER SCALE - this will just effect the rendering really all the math can be done without the scaling just the final render has to be
+									// scaled so it will show on the screen correctly
 	
     public TowerDefense() {
         super("Tower Defense");
@@ -36,7 +36,7 @@ public class TowerDefense extends StateBasedGame {
     public static void main(String[] args) throws SlickException {
 		try {
 			AppGameContainer app = new AppGameContainer(new TowerDefense());
-			app.setDisplayMode(TowerDefense.width * TowerDefense.SCALE, TowerDefense.height * TowerDefense.SCALE, false);
+			app.setDisplayMode(TowerDefense.width, TowerDefense.height, false);
 			app.setTargetFrameRate(60);
 			app.start();
 		} catch (SlickException e) {

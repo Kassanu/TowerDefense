@@ -39,12 +39,12 @@ public class TowerManager {
 		((BuildableTile) tile).removeTower();
 	}
 	
-	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
+	public void render(GameContainer gc, StateBasedGame sbg, Graphics g, Vector2f offset) throws SlickException {
 		for (Entry<Long, Tower> entry : this.towers.entrySet()) {
-	        entry.getValue().render(gc, g);
+	        entry.getValue().render(gc, g, offset);
 		}
 		for (Entry<Long, Bullet> bullet : this.bullets.entrySet()) {
-			bullet.getValue().render(gc, g);
+			bullet.getValue().render(gc, g, offset);
 		}
 	}
 
@@ -68,8 +68,6 @@ public class TowerManager {
 	}
 
 	public void spawnBullet(Vector2f worldPosition, Vector2f target) {
-		System.out.println("SPAWNING BULLET!");
-		System.out.println("worldPosition= " + worldPosition.toString() + ", target= " + target.toString());
 		Bullet bullet = this.bulletPool.allocate();
 		bullet.init(LASTBULLETID, worldPosition, target);
 		this.addBullet(bullet);
@@ -81,7 +79,6 @@ public class TowerManager {
 	}
 	
 	private void removeBullet(Long bulletId) {
-		System.out.println("REMOVING BULLET!");
 		Bullet bulllet = this.bullets.get(bulletId);
 		this.bulletPool.release(bulllet);
 		this.bullets.remove(bulletId);

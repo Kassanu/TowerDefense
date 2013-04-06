@@ -12,6 +12,5 @@ public class MGtower extends Tower {
 		this.firerate = 200;
 		this.color = "660099";
 		this.setAttackable(this.level.getAttackableTiles(this.position.getPosition(), this.range));
-		System.out.println(Arrays.toString(this.attackable));
 	}
 }
