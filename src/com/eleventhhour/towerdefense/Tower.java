@@ -86,12 +86,12 @@ public abstract class Tower {
 	
 	public void render(GameContainer gc, Graphics g, Vector2f offset){
 		g.setColor(Color.blue);
-		g.drawRect(((this.worldPosition.x - offset.x) * TowerDefense.SCALE) + (((TowerDefense.TILESIZE / 2) * TowerDefense.SCALE) - 5), ((this.worldPosition.y - offset.y ) * TowerDefense.SCALE) + (((TowerDefense.TILESIZE / 2) * TowerDefense.SCALE) - 5), 10, 10);
+		g.drawRect(((this.worldPosition.x + offset.x) * TowerDefense.SCALE) + (((TowerDefense.TILESIZE / 2) * TowerDefense.SCALE) - 5), ((this.worldPosition.y + offset.y ) * TowerDefense.SCALE) + (((TowerDefense.TILESIZE / 2) * TowerDefense.SCALE) - 5), 10, 10);
 		//render attackable tiles
 		Vector2f attackablePos = null;
 		for (Tile attackableTile : this.attackable) {
 			attackablePos = this.level.getTileWorldPosition(attackableTile); 
-			g.drawRect((attackablePos.x - offset.x) * TowerDefense.SCALE, (attackablePos.y - offset.y) * TowerDefense.SCALE, (TowerDefense.TILESIZE * TowerDefense.SCALE), (TowerDefense.TILESIZE * TowerDefense.SCALE));
+			g.drawRect((attackablePos.x + offset.x) * TowerDefense.SCALE, (attackablePos.y + offset.y) * TowerDefense.SCALE, (TowerDefense.TILESIZE * TowerDefense.SCALE), (TowerDefense.TILESIZE * TowerDefense.SCALE));
 		}
 	}
 	

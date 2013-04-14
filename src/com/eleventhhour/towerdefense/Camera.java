@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -23,20 +24,24 @@ public class Camera implements GameObject {
 	
 	private long ID;
 	protected Collidable collidable;
+	protected Vector2f screenPosition;
 	protected Vector2f worldPosition; //Cameras top,left position in the game world
 	protected Vector2f centerPosition; // Cameras center position in the game world
 	protected int width; // Cameras width
 	protected int height; // Cameras height
 	protected int radius;
+	protected GameplayState gs;
 	
-	public Camera (long id, Vector2f worldPosition, int width, int height, int radius) {
+	public Camera (long id, Vector2f screenPosition, Vector2f worldPosition, int width, int height, int radius, GameplayState gs) {
 		this.ID = id;
+		this.screenPosition = screenPosition;
 		this.worldPosition = worldPosition;
 		this.centerPosition = new Vector2f(0,0);
 		this.width = width;
 		this.height = height;
 		this.radius = radius;
 		this.collidable = new Collidable(this, CollisionShape.RECTANGLE, worldPosition, width, height, radius);
+		this.gs = gs;
 		this.calcCenterPosition();
 	}
 	
@@ -75,13 +80,22 @@ public class Camera implements GameObject {
 			this.calcCenterPosition();
 	}
 	
+	public boolean isInView(GameObject obj1) {
+		Vector2f offset = this.gs.getOffset();
+		Rectangle Camrect = new Rectangle((this.worldPosition.x * -1) + offset.x, (this.worldPosition.y * -1) + offset.y, this.width, this.height);
+		Rectangle objRect = new Rectangle(obj1.getWorldPosition().x + offset.x, obj1.getWorldPosition().y + offset.y, obj1.getWidth(), obj1.getHeight());
+		return Camrect.intersects(objRect);
+	}
+	
 	public void init() {}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {
 		//this.collidable.update(gc, sbg, gs, delta);
 	}
 
-	public void render(GameContainer gc, Graphics g, Vector2f offset) {}
+	public void render(GameContainer gc, Graphics g, Vector2f offset) {
+		g.draw(new Rectangle((this.screenPosition.x),(this.screenPosition.y), this.width, this.height));
+	}
 
 	public long getId() {
 		return this.ID;
@@ -123,7 +137,7 @@ public class Camera implements GameObject {
 	}
 
 	public void moveCamera(Vector2f move) {
-		this.worldPosition = this.worldPosition.add(move);
+		this.worldPosition = this.worldPosition.sub(move);
 		this.calcCenterPosition();
 	}
 }

@@ -41,10 +41,11 @@ public class TowerManager {
 	
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g, Vector2f offset) throws SlickException {
 		for (Entry<Long, Tower> entry : this.towers.entrySet()) {
-	        entry.getValue().render(gc, g, offset);
+			entry.getValue().render(gc, g, offset);
 		}
 		for (Entry<Long, Bullet> bullet : this.bullets.entrySet()) {
-			bullet.getValue().render(gc, g, offset);
+			if (((GameplayState) sbg.getCurrentState()).getCamera().isInView(bullet.getValue()))
+				bullet.getValue().render(gc, g, offset);
 		}
 	}
 

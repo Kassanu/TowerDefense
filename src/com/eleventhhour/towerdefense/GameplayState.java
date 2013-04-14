@@ -32,32 +32,36 @@ public class GameplayState extends BasicGameState implements MouseListener {
 	}
 
 	@Override
-	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
+	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {	}
+	
+	@Override
+	public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		try {
-			this.camera = new Camera(0, new Vector2f(0,0), gc.getWidth(), gc.getHeight(), 0);
-			this.setLevel(new Level(this, TowerDefense.width, TowerDefense.height, new Vector2f(0,0)));
+			this.camera = new Camera(0,new Vector2f(0,00), new Vector2f(0,0), 20 * TowerDefense.TILESIZE, 16 * TowerDefense.TILESIZE, 0, this);
+			this.setLevel(new Level(this, gc.getWidth(), gc.getHeight(), new Vector2f(0,00)));
 			this.towerManager = new TowerManager();
 			this.enemyManager = new EnemyManager(this.getLevel());
-			this.getLevel().loadMap("res/levels/test.tmx");
+			this.level.loadMap("res/levels/test.tmx");
 			this.waveManager = new WaveManager(1);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	
 	}
-
+	
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
 		Vector2f offset = this.getOffset();
-		this.level.render(gc, sbg, g, offset);
+		this.level.render(gc, sbg, g, this, offset);
 		this.towerManager.render(gc, sbg, g, offset);
 		this.enemyManager.render(gc, sbg, g, offset);
+		this.camera.render(gc, g, offset);
 	}
 
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		//update the camera first so all the following calculations will be correct
 		this.camera.update(gc, sbg, this, delta);
-		
+		//System.out.println(this.camera.getWorldPosition());
 		if (this.playerHealth <= 0) {
 			//trigger game over
 			System.out.println("GAME OVER");
@@ -72,9 +76,7 @@ public class GameplayState extends BasicGameState implements MouseListener {
 		Input i = gc.getInput();
 		int mx = i.getMouseX();
 		int my = i.getMouseY();
-		System.out.println("[mx,my] = ["+mx+","+my+"]");
 		this.getLevel().setHover(this.getLevel().getTileGridPosition(mx,my));
-		System.out.println(this.getLevel().getHover());
 		if (i.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
 			Tile hoverTile = this.getLevel().getHoverTile();
 			if (hoverTile.getTileType() == TileType.BUILDABLE)
@@ -88,7 +90,7 @@ public class GameplayState extends BasicGameState implements MouseListener {
 		 * Update game systems.
 		 */
 		this.level.update(gc, sbg, delta);		
-		this.waveManager.update(gc, sbg, this.enemyManager, delta);
+		//this.waveManager.update(gc, sbg, this.enemyManager, delta);
 		this.enemyManager.update(gc, sbg, this, delta);
 		this.towerManager.update(gc, sbg, this, delta);
 	}
@@ -122,7 +124,7 @@ public class GameplayState extends BasicGameState implements MouseListener {
 	}
 	
 	public void mouseDragged(int oldx, int oldy, int newx, int newy) {
-		float dx = (newx - oldx) * (-1);
+		float dx = (newx - oldx) *(-1);
 		float dy = (newy - oldy) * (-1);
 		this.camera.moveCamera(new Vector2f(dx, dy));
 	}
@@ -139,6 +141,10 @@ public class GameplayState extends BasicGameState implements MouseListener {
 		Vector2f cameraPos = this.camera.getOffset();
 		Vector2f levelPos = this.level.getOffset();
 		return new Vector2f((cameraPos.x + levelPos.x), (cameraPos.y + levelPos.y));
+	}
+
+	public Camera getCamera() {
+		return this.camera;
 	}
 	
 }

@@ -70,7 +70,11 @@ public class EnemyManager {
 
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g, Vector2f offset) {
 		for (Entry<Long, Enemy> enemy : this.enemies.entrySet()) {
-	        enemy.getValue().render(gc, g, offset);
+			if (((GameplayState) sbg.getCurrentState()).getCamera().isInView(enemy.getValue()))
+				enemy.getValue().render(gc, g, offset);
+			else {
+				System.out.println("Not Rendering");
+			}
 		}
 	}
 

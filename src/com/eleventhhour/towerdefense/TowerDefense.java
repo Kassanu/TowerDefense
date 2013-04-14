@@ -22,8 +22,8 @@ public class TowerDefense extends StateBasedGame {
 	
 	public final static int MAINMENUSTATE = 1;
 	public final static int GAMEPLAYSTATE = 2;
-	public final static int width = 320;
-	public final static int height = 320;
+	public final static int width = 640;
+	public final static int height = 640;
 	public final static int TILESIZE = 32;
 	public static int SCALE = 1; 	//RENDER SCALE - this will just effect the rendering really all the math can be done without the scaling just the final render has to be
 									// scaled so it will show on the screen correctly

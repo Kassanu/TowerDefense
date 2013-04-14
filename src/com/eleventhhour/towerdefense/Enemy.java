@@ -117,7 +117,7 @@ public class Enemy implements GameObject {
 	public void render(GameContainer gc, Graphics g, Vector2f offset){
 		g.setColor(Color.red);
 		this.collidable.render(gc, g, offset);
-		g.draw(new Rectangle((this.worldPosition.x - offset.x) * TowerDefense.SCALE,(this.worldPosition.y - offset.y) * TowerDefense.SCALE, this.width * TowerDefense.SCALE, this.height * TowerDefense.SCALE));
+		g.draw(new Rectangle((this.worldPosition.x + offset.x) * TowerDefense.SCALE,(this.worldPosition.y + offset.y) * TowerDefense.SCALE, this.width * TowerDefense.SCALE, this.height * TowerDefense.SCALE));
 	}
 	
 	public void getAttacked(int damage) {
