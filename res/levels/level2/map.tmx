@@ -1,12 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="20" height="16" tilewidth="32" tileheight="32">
- <tileset firstgid="1" name="Test" tilewidth="32" tileheight="32">
-  <properties>
-   <property name="end" value="true"/>
-   <property name="start" value="false"/>
-   <property name="waypoint" value="true"/>
-  </properties>
-  <image source="../tilesheet.png" width="256" height="320"/>
+ <tileset firstgid="1" name="tilesheet" tilewidth="32" tileheight="32">
+  <image source="../../tilesheet.png" width="256" height="320"/>
   <tile id="0">
    <properties>
     <property name="type" value="buildable"/>
@@ -38,13 +33,13 @@
   </tile>
  </tileset>
  <layer name="background" width="20" height="16">
-  <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC2NlYGBgpSJmQsKMFGKYmYxI5jFRYAcu8xixsMkxD91NlJiHDVNqHnrYUcM8asUvLvcRi4kJP2IxLcyDYWqYR2x6Ga7mURMDACd6yvwABQAA
+  <data encoding="base64" compression="zlib">
+   eJxjZWBgYKUyZqQSBpnFRAImxjxi3Tdq3qh5w808YjC18y8tzKMmBgAOEgJn
   </data>
  </layer>
- <layer name="Waypoints" width="20" height="16">
-  <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC2NgoC5gprJ5o2AUDBfAMtAOGAUYAAC1SPnKAAUAAA==
+ <layer name="waypoints" width="20" height="16">
+  <data encoding="base64" compression="zlib">
+   eJxjYBjcgHmgHTAKRsEIASwD7YABAAAV8AAI
   </data>
  </layer>
 </map>

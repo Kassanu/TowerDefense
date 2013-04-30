@@ -101,7 +101,7 @@ public class Enemy implements GameObject {
 		this.collidable.update(movement);
 		if (this.checkAtWaypoint()) {
 			if (gs.getLevel().isLastWaypoint(this.waypointNumber)) {
-				gs.decreasePlayerHealth();
+				PlayerData.decreaseHealth(1);
 				this.health = 0;
 			}
 			else {
@@ -126,6 +126,11 @@ public class Enemy implements GameObject {
 	
 	public boolean isDead() {
 		return this.health <= 0;
+	}
+	
+	public void onDeath() {
+		PlayerData.increaseMoney(1);
+		PlayerData.increaseScore(1);
 	}
 	
 	/**

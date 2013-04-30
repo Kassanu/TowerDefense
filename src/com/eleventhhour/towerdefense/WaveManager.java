@@ -30,7 +30,7 @@ public class WaveManager {
 	private void loadWaves(int level) {
 		Scanner scanner = null;
 		try {
-			scanner = new Scanner(new FileInputStream("res/levels/wave"+level+".txt"));
+			scanner = new Scanner(new FileInputStream("res/levels/level"+level+"/waves.txt"));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

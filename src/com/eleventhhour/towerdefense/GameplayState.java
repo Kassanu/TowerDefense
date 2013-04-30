@@ -21,9 +21,18 @@ public class GameplayState extends BasicGameState implements MouseListener {
 	private WaveManager waveManager;
 	private EnemyManager enemyManager;
 	private Camera camera;
-	private int playerHealth = 5;
-	private int playerMoney = 0;
-	private int playerScore = 0;
+	public static enum GameState {NORMAL, PAUSED, WIN, LOSE, PLACE};
+	public GameState currentState = GameState.NORMAL;
+	
+	/*
+	 * gameStates
+	 * 
+	 * NORMAL - Gameplay is normal, everything updates as usual
+	 * PAUSED - Gameplay is paused all managers cease updating
+	 * WIN - Player has completed the level, show a pop up with score and option to go back to main menu
+	 * LOSE - Player has lost the level, show pop up with score and option to go back to main menu
+	 * PLACE - Player is placing a tower,  render tower at players cursor position to show placement
+	 */
 	
 	public GameplayState(int stateId) {
 		super();
@@ -41,8 +50,8 @@ public class GameplayState extends BasicGameState implements MouseListener {
 			this.setLevel(new Level(this, gc.getWidth(), gc.getHeight(), new Vector2f(0,00)));
 			this.towerManager = new TowerManager();
 			this.enemyManager = new EnemyManager(this.getLevel());
-			this.level.loadMap("res/levels/test.tmx");
-			this.waveManager = new WaveManager(1);
+			this.level.loadMap("res/levels/level"+PlayerData.level+"/map.tmx");
+			this.waveManager = new WaveManager(PlayerData.level);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	
@@ -59,40 +68,43 @@ public class GameplayState extends BasicGameState implements MouseListener {
 
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
-		//update the camera first so all the following calculations will be correct
-		this.camera.update(gc, sbg, this, delta);
+		
+		Input i = gc.getInput();
+		int mx = i.getMouseX();
+		int my = i.getMouseY();
+		this.getLevel().setHover(this.getLevel().getTileGridPosition(mx,my));
+		
+		switch (this.currentState) {
+			case PLACE:
+				if (i.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+					Tile hoverTile = this.getLevel().getHoverTile();
+					if (hoverTile.getTileType() == TileType.BUILDABLE)
+						if (((BuildableTile)hoverTile).isBuildable())
+							this.towerManager.addTower(this.level, hoverTile);
+						else if (!((BuildableTile)hoverTile).isBuildable())
+							this.towerManager.removeTower(hoverTile);
+				}	
+			case NORMAL:
+				this.camera.update(gc, sbg, this, delta);
+				this.level.update(gc, sbg, delta);		
+				this.waveManager.update(gc, sbg, this.enemyManager, delta);
+				this.enemyManager.update(gc, sbg, this, delta);
+				this.towerManager.update(gc, sbg, this, delta);
+				break;
+			case PAUSED:
+				break;
+			case WIN:
+				break;
+			case LOSE:
+				break;
+		}
 		//System.out.println(this.camera.getWorldPosition());
-		if (this.playerHealth <= 0) {
+		if (PlayerData.health <= 0) {
 			//trigger game over
 			System.out.println("GAME OVER");
 			System.exit(0);
 		}
 		
-		/**
-		 * Handle input
-		 * 
-		 * Might want to change this to an Input System, will allow multiple input interfaces and key bindings
-		 */
-		Input i = gc.getInput();
-		int mx = i.getMouseX();
-		int my = i.getMouseY();
-		this.getLevel().setHover(this.getLevel().getTileGridPosition(mx,my));
-		if (i.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-			Tile hoverTile = this.getLevel().getHoverTile();
-			if (hoverTile.getTileType() == TileType.BUILDABLE)
-				if (((BuildableTile)hoverTile).isBuildable())
-					this.towerManager.addTower(this.level, hoverTile);
-				else if (!((BuildableTile)hoverTile).isBuildable())
-					this.towerManager.removeTower(hoverTile);
-		} 
-		
-		/**
-		 * Update game systems.
-		 */
-		this.level.update(gc, sbg, delta);		
-		//this.waveManager.update(gc, sbg, this.enemyManager, delta);
-		this.enemyManager.update(gc, sbg, this, delta);
-		this.towerManager.update(gc, sbg, this, delta);
 	}
 
 	@Override
@@ -106,10 +118,6 @@ public class GameplayState extends BasicGameState implements MouseListener {
 
 	public void setLevel(Level level) {
 		this.level = level;
-	}
-
-	public void decreasePlayerHealth() {
-		this.playerHealth--;
 	}
 	
 	public TowerManager getTowerManager() {

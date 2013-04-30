@@ -2,6 +2,7 @@ package com.eleventhhour.towerdefense;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.MouseListener;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
@@ -10,7 +11,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 
 public class MainMenuState extends BasicGameState implements MouseListener {
-
+	
 	private Color bgcolor = Color.black;
 	private Color buttoncolor = Color.green;
 	private Color textcolor = Color.white;
@@ -55,7 +56,7 @@ public class MainMenuState extends BasicGameState implements MouseListener {
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		if(this.pressed == true){
-			sbg.enterState(TowerDefense.GAMEPLAYSTATE);
+			sbg.enterState(TowerDefense.LEVELSELECTION);
 		}
 	}
 	

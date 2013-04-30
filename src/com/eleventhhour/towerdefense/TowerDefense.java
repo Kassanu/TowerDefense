@@ -22,6 +22,7 @@ public class TowerDefense extends StateBasedGame {
 	
 	public final static int MAINMENUSTATE = 1;
 	public final static int GAMEPLAYSTATE = 2;
+	public final static int LEVELSELECTION = 3;
 	public final static int width = 640;
 	public final static int height = 640;
 	public final static int TILESIZE = 32;
@@ -35,6 +36,7 @@ public class TowerDefense extends StateBasedGame {
  
     public static void main(String[] args) throws SlickException {
 		try {
+			PlayerData.getInstance();
 			AppGameContainer app = new AppGameContainer(new TowerDefense());
 			app.setDisplayMode(TowerDefense.width, TowerDefense.height, false);
 			app.setTargetFrameRate(60);
@@ -49,8 +51,10 @@ public class TowerDefense extends StateBasedGame {
 	public void initStatesList(GameContainer gc) throws SlickException {
 		MainMenuState state1 = new MainMenuState(MAINMENUSTATE);
 		GameplayState state2 = new GameplayState(GAMEPLAYSTATE);
+		LevelSelectorState state3 = new LevelSelectorState(LEVELSELECTION);
 		addState(state1);
 		addState(state2);
+		addState(state3);
 	}
 
 }
