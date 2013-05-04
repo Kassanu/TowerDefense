@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -52,7 +54,7 @@ public class Level {
 		int mapHeight = tiledmap.getHeight();
 		
 		this.tiles = new Tile[mapWidth][mapHeight];
-		
+		long tileId = 0;
 		for (int i = 0; i < mapWidth; i++) {
 			for (int j = 0; j < mapHeight; j++) {
 				int tileID = tiledmap.getTileId(i, j, 0);
@@ -60,15 +62,15 @@ public class Level {
 				
 				if (type.equals("buildable")) {
 					//create buildabletile
-					this.tiles[i][j] = new BuildableTile(tiledmap.getTileImage(i, j, 0), new Vector2f(i,j), this.getTileWorldPosition(i, j), TileType.BUILDABLE);
+					this.tiles[i][j] = new BuildableTile(tileId++, tiledmap.getTileImage(i, j, 0), new Vector2f(i,j), this.getTileWorldPosition(i, j), TileType.BUILDABLE);
 				}
 				else if (type.equals("path")) {
 					//create PathTile
-					this.tiles[i][j] = new PathTile(tiledmap.getTileImage(i, j, 0), new Vector2f(i,j), this.getTileWorldPosition(i, j), TileType.PATH);
+					this.tiles[i][j] = new PathTile(tileId++, tiledmap.getTileImage(i, j, 0), new Vector2f(i,j), this.getTileWorldPosition(i, j), TileType.PATH);
 				}
 				else if (type.equals("boundry")) {
 					//create BoundryTile
-					this.tiles[i][j] = new BoundryTile(tiledmap.getTileImage(i, j, 0), new Vector2f(i,j), this.getTileWorldPosition(i, j), TileType.BOUNDRY);
+					this.tiles[i][j] = new BoundryTile(tileId++, tiledmap.getTileImage(i, j, 0), new Vector2f(i,j), this.getTileWorldPosition(i, j), TileType.BOUNDRY);
 				}
 				
 				//determine if start or end waypoint
@@ -148,6 +150,7 @@ public class Level {
 							listWaypoints.add(new Waypoint(waypointId++, this.getTileWorldPosition(workingCurrent.x, workingCurrent.y), this.getTileGridPosition(workingCurrent), (TowerDefense.TILESIZE), (TowerDefense.TILESIZE), 0)); 
 						}
 						listPath.add(workingCurrent.copy());
+						((PathTile) tile).setPathPosition(listPath.size() - 1);
 						lastDirection = dir.copy();
 						pathFound = true;
 						current = workingCurrent.copy();
@@ -373,6 +376,13 @@ public class Level {
 				}
 			}
 		}
+		
+		Collections.sort(attackable, new Comparator<Tile>() {
+		    public int compare(Tile tile1, Tile tile2) {
+				return ((PathTile)tile1).getPathPosition() - ((PathTile)tile2).getPathPosition();   
+		    }
+		});
+					
 		return attackable.toArray(new Tile[attackable.size()]);
 	}
 

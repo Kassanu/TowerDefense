@@ -1,16 +1,21 @@
 package com.eleventhhour.towerdefense;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Random;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.StateBasedGame;
 
 public abstract class Tower {
+	
+	public static Image spriteSheet;
 	
 	public final long ID;
 	
@@ -37,6 +42,8 @@ public abstract class Tower {
 	
 	public void setAttackable(Tile[] attack){
 		this.attackable = attack;
+		
+		System.out.println(Arrays.toString(this.attackable));
 	}
 	
 	public void init(){
@@ -65,14 +72,21 @@ public abstract class Tower {
 		}
 	}
 	
+	/**
+	 * selectEnemyToAttack --
+	 * 
+	 * The tower will select an enemy from the last tile in it's attackable array(should be the tile farthest along the path)
+	 * and will select the enemy with the lowest health to attack
+	 * @return the enemy that will be attacked
+	 */
 	public Enemy selectEnemyToAttack() {
 		Enemy enemy = null;
 		int i = this.attackable.length - 1;
-		Random r = new Random();		
 		while (enemy == null && i >= 0) {
 			ArrayList<Enemy> enemiesOnTile = this.attackable[i].getEnemiesOnTile();
 			if (!enemiesOnTile.isEmpty()) {
-				enemy = enemiesOnTile.get(r.nextInt(enemiesOnTile.size()));
+				Collections.sort(enemiesOnTile, new EnemyHealthComparator()); //use custom comparator to sort enemies by health
+				enemy = enemiesOnTile.get(0); //the first enemy in the list should have the lowest health
 			}
 			i--;
 		}

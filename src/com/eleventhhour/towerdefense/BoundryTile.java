@@ -7,8 +7,8 @@ import com.eleventhhour.towerdefense.Level.TileType;
 
 public class BoundryTile extends Tile {
 
-	public BoundryTile(Image tileImage, Vector2f tilePosition, Vector2f worldPosition, TileType tileType) {
-		super(tileImage, tilePosition, worldPosition, tileType);
+	public BoundryTile(long id, Image tileImage, Vector2f tilePosition, Vector2f worldPosition, TileType tileType) {
+		super(id, tileImage, tilePosition, worldPosition, tileType);
 	}
 
 }

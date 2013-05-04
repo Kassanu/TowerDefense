@@ -1,6 +1,7 @@
 package com.eleventhhour.towerdefense;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -25,7 +26,8 @@ public abstract class Tile implements GameObject {
 	protected int height;
 	protected int radius;
 	
-	public Tile(Image tileImage, Vector2f tilePosition, Vector2f worldPosition, TileType tileType) {
+	public Tile(long id, Image tileImage, Vector2f tilePosition, Vector2f worldPosition, TileType tileType) {
+		this.ID = id;
 		this.tileImage = tileImage;
 		this.tilePosition = tilePosition;
 		this.worldPosition = worldPosition;
@@ -121,4 +123,10 @@ public abstract class Tile implements GameObject {
 		return (this.worldPosition.copy()).scale(TowerDefense.SCALE);
 	}
 	
+}
+
+class TileComparator implements Comparator<Tile> {
+    public int compare(Tile t1, Tile t2) {
+        return (int) (t1.getId() - t2.getId());
+    }
 }

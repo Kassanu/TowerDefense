@@ -34,12 +34,12 @@
  </tileset>
  <layer name="background" width="20" height="16">
   <data encoding="base64" compression="zlib">
-   eJxjZWBgYKUyZqQSBpnFRAImxjxi3Tdq3qh5w808YjC18y8tzKMmBgAOEgJn
+   eJxjZWBgYKUyZqQSBpnFRCQm1jxi3DdqHuXmEYupnV5GzRv+5lETAwALzgJi
   </data>
  </layer>
  <layer name="waypoints" width="20" height="16">
   <data encoding="base64" compression="zlib">
-   eJxjYBjcgHmgHTAKRsEIASwD7YABAAAV8AAI
+   eJxjYBjcgHmgHTAKaAZYBtoBo2DEAwAcMAAI
   </data>
  </layer>
 </map>

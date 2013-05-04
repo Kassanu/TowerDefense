@@ -12,8 +12,8 @@ public class BuildableTile extends Tile {
 	
 	Tower tower = null;
 	
-	public BuildableTile(Image tileImage, Vector2f tilePosition, Vector2f worldPosition, TileType tileType) {
-		super(tileImage, tilePosition, worldPosition, tileType);
+	public BuildableTile(long id, Image tileImage, Vector2f tilePosition, Vector2f worldPosition, TileType tileType) {
+		super(id, tileImage, tilePosition, worldPosition, tileType);
 	}
 	
 	public void addTower(Tower t) {
