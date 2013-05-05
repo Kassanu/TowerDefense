@@ -5,27 +5,28 @@ import java.util.Arrays;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.state.StateBasedGame;
 
-public class MGtower extends Tower {
-	
-	public MGtower(long lASTID, Tile pos, Level level){
+import com.eleventhhour.towerdefense.TileEffect.EffectType;
+
+public class SlowTower extends Tower {
+
+	public SlowTower(long lASTID, Tile pos, Level level){
 		super(lASTID, pos, level);
-		this.cost = 15;
+		this.cost = 30;
 		this.range = 1;
-		this.damage = 1;
-		this.firerate = 200;
-		this.color = "660099";
+		this.damage = 20;
+		this.firerate = 3000;
+		this.color = "FF6600";
 		this.setAttackable(this.level.getAttackableTiles(this.position.getPosition(), this.range));
+		System.out.println(Arrays.toString(this.attackable));
 	}
 	
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta){
 		if (this.cooldown <= 0) {
-			Enemy enemy = this.selectEnemyToAttack();
-			if (enemy != null) {
-				gs.getTowerManager().spawnBullet(this.centerPosition.copy(), enemy.getCenterPosition());
-				this.attack(enemy);
-				this.cooldown = this.firerate;
+			for (Tile attackableTile : this.attackable) {
+				attackableTile.addEffect(new TileEffect(EffectType.SPEED, 2, 2000, attackableTile));
 			}
+			this.cooldown = this.firerate;
 		}
 		else {
 			this.cooldown -= delta;

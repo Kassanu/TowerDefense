@@ -5,6 +5,8 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.StateBasedGame;
 
+import com.eleventhhour.towerdefense.TileEffect.EffectType;
+
 /**
  * Tile effects are status for a tile.  They will be applied to all enemies on a tile.
  * 
@@ -17,7 +19,6 @@ public interface ITileEffect {
 
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta);
 	public void render(GameContainer gc, Graphics g, Vector2f offset);
-	public void calcCenterPosition();
 	public long getId();
 	public Vector2f getWorldPosition(); //x,y coords in the game world
 	public Vector2f getCenterPosition();
@@ -25,6 +26,7 @@ public interface ITileEffect {
 	public int getWidth();
 	public int getHeight();
 	public int getRadius();
-	//public EffectType 	
-	
+	public float getModifier();
+	public EffectType getEffectType();
+	public boolean isOver();
 }

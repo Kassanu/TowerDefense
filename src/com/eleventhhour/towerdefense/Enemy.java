@@ -1,6 +1,8 @@
 package com.eleventhhour.towerdefense;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -13,6 +15,7 @@ import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.StateBasedGame;
 
 import com.eleventhhour.towerdefense.Collision.CollisionShape;
+import com.eleventhhour.towerdefense.TileEffect.EffectType;
 
 public class Enemy implements GameObject {
 	
@@ -44,7 +47,8 @@ public class Enemy implements GameObject {
 	protected int height;
 	protected int radius;
 	protected int health;
-	protected float speed;
+	protected float maxSpeed;
+	protected float currentSpeed;
 	protected int scoreReward;
 	protected int moneyReward;
 	Vector2f movement;
@@ -55,7 +59,6 @@ public class Enemy implements GameObject {
 	protected int aniTotalDuration; //Total duration of animationFrame
 	protected int aniCurrentDuration; //current duration of this animationFrame
 	protected int spriteGroup; //group on the sprite sheet this enemy gets it's sprite from
-	//Image image;
 	
 	public Enemy() {
 		this.ID = 0;
@@ -66,7 +69,8 @@ public class Enemy implements GameObject {
 		this.radius = 0;
 		this.collidable = null;
 		this.health = 0;
-		this.speed = 0;
+		this.maxSpeed = 0;
+		this.currentSpeed = 0;
 		this.scoreReward = 0;
 		this.moneyReward = 0;
 		this.aniType = 0;
@@ -95,7 +99,7 @@ public class Enemy implements GameObject {
 		this.height = height;
 		this.radius = radius;
 		this.health = (int) Enemy.DEFAULTVALUES[type][0];
-		this.speed = (float) Enemy.DEFAULTVALUES[type][1];
+		this.maxSpeed = (float) Enemy.DEFAULTVALUES[type][1];
 		this.scoreReward = (int) Enemy.DEFAULTVALUES[type][2];
 		this.moneyReward = (int) Enemy.DEFAULTVALUES[type][3];
 		this.spriteGroup = (int) Enemy.DEFAULTVALUES[type][4];
@@ -110,12 +114,29 @@ public class Enemy implements GameObject {
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta){
+		Tile tile = gs.getLevel().getTileAtGridPosition(this.tilePosition);
+		//System.out.println(tile);
+		ArrayList<TileEffect> effects = tile.getTileEffects();
+		this.currentSpeed = this.maxSpeed;
+		//System.out.println(effects);
+		for (TileEffect tileEffect : effects) {
+			switch (tileEffect.getEffectType()) {
+				case DAMAGE:
+					this.getAttacked((int) tileEffect.getModifier());
+					break;
+				case SPEED:
+					this.currentSpeed /= (int) tileEffect.getModifier(); 
+					System.out.println("I'm being slowed");
+					break;
+			}
+		}
 		this.movement = this.waypoint.getCollidable().getCenterPosition().copy();
 		this.movement = this.movement.sub(this.centerPosition);
 		this.movement = this.movement.normalise();
-		this.movement = this.movement.scale(this.speed / delta);
+		this.movement = this.movement.scale(this.currentSpeed / delta);
 		this.worldPosition = this.worldPosition.add(this.movement);
 		this.calcCenterPosition();
+		this.tilePosition = gs.getLevel().getTileGridPosition(this.centerPosition).copy();
 		this.collidable.update(movement);
 		if (this.checkAtWaypoint()) {
 			if (gs.getLevel().isLastWaypoint(this.waypointNumber)) {
@@ -197,7 +218,7 @@ public class Enemy implements GameObject {
 
 	@Override
 	public String toString() {
-		return "Enemy [_ID=" + ID + ", health=" + health + ", speed=" + speed
+		return "Enemy [_ID=" + ID + ", health=" + health + ", speed=" + maxSpeed
 				+ ", scoreReward=" + scoreReward + ", worldPosition=" + worldPosition
 				+ ", movement=" + movement + ", waypoint=" + waypoint
 				+ ", waypointNumber=" + waypointNumber + "]";

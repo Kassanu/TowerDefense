@@ -23,6 +23,7 @@ public abstract class Tower {
 	public Vector2f worldPosition;
 	public Vector2f centerPosition;
 	public Tile[] attackable = null;
+	public int attackingTileNum = 0;
 	protected Level level = null;
 	public int cost = 0;
 	public int range = 0;
@@ -58,20 +59,6 @@ public abstract class Tower {
 		this.centerPosition.y = (TowerDefense.TILESIZE / 2) + this.worldPosition.y;
 	}
 	
-	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta){
-		if (this.cooldown <= 0) {
-			Enemy enemy = this.selectEnemyToAttack();
-			if (enemy != null) {
-				gs.getTowerManager().spawnBullet(this.centerPosition.copy(), enemy.getCenterPosition());
-				this.attack(enemy);
-				this.cooldown = this.firerate;
-			}
-		}
-		else {
-			this.cooldown -= delta;
-		}
-	}
-	
 	/**
 	 * selectEnemyToAttack --
 	 * 
@@ -81,14 +68,15 @@ public abstract class Tower {
 	 */
 	public Enemy selectEnemyToAttack() {
 		Enemy enemy = null;
-		int i = this.attackable.length - 1;
-		while (enemy == null && i >= 0) {
-			ArrayList<Enemy> enemiesOnTile = this.attackable[i].getEnemiesOnTile();
+		this.attackingTileNum = this.attackable.length - 1;
+		while (enemy == null && this.attackingTileNum >= 0) {
+			ArrayList<Enemy> enemiesOnTile = this.attackable[this.attackingTileNum].getEnemiesOnTile();
 			if (!enemiesOnTile.isEmpty()) {
 				Collections.sort(enemiesOnTile, new EnemyHealthComparator()); //use custom comparator to sort enemies by health
 				enemy = enemiesOnTile.get(0); //the first enemy in the list should have the lowest health
 			}
-			i--;
+			else 
+				this.attackingTileNum--;
 		}
 		return enemy;
 	}
@@ -112,4 +100,6 @@ public abstract class Tower {
 	public long getId() {
 		return this.ID;
 	}
+
+	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {}
 }

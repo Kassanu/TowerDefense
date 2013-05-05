@@ -27,7 +27,8 @@ public class TowerManager {
 	}
 	
 	public void addTower(Level level, Tile tile) {
-		MGtower t = new MGtower(LASTID, tile, level);
+		//Rtower t = new Rtower(LASTID, tile, level);
+		SlowTower t = new SlowTower(LASTID, tile, level);
 		towers.put(LASTID, t);
 		((BuildableTile)tile).addTower(t);
 		LASTID++;

@@ -22,6 +22,8 @@ public abstract class Tile implements GameObject {
 	protected Vector2f centerPosition;
 	protected TileType tileType;
 	protected ArrayList<Enemy> enemiesOnTile;
+	protected ArrayList<TileEffect> tileEffects;
+	public ArrayList<Integer> tileEffectsToBeRemoved;
 	protected int width;
 	protected int height;
 	protected int radius;
@@ -34,6 +36,8 @@ public abstract class Tile implements GameObject {
 		this.centerPosition = new Vector2f(0,0);
 		this.tileType = tileType;
 		this.enemiesOnTile = new ArrayList<Enemy>();
+		this.tileEffects = new ArrayList<TileEffect>();
+		this.tileEffectsToBeRemoved = new ArrayList<Integer>();
 		this.width = TowerDefense.TILESIZE;
 		this.height = TowerDefense.TILESIZE;
 		this.radius = TowerDefense.TILESIZE;
@@ -43,12 +47,29 @@ public abstract class Tile implements GameObject {
 	
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {
 		//this.collidable.update(gc, sbg, gs, delta);
+		int i = 0;
+		for (TileEffect effect : this.tileEffects) {
+			effect.update(gc, sbg, gs, delta);
+			if (effect.isOver()) {
+	        	this.tileEffectsToBeRemoved.add(i);
+			}
+	        i++;
+		}
+		if (!this.tileEffectsToBeRemoved.isEmpty()) {
+			for (Integer eId : this.tileEffectsToBeRemoved)
+				this.removeEffect(eId);
+
+			this.tileEffectsToBeRemoved.clear();
+		}
 		this.enemiesOnTile.clear();
 	}
 	
 	public void render(GameContainer gc, Graphics g, Vector2f offset) {
 		//((i * TowerDefense.TILESIZE) - offset.x) * TowerDefense.SCALE, ((j * TowerDefense.TILESIZE) - offset.y) * TowerDefense.SCALE
 		this.tileImage.draw((this.worldPosition.x + offset.x) * TowerDefense.SCALE,(this.worldPosition.y + offset.y) * TowerDefense.SCALE,TowerDefense.SCALE);
+		for (TileEffect effect : this.tileEffects) {
+			effect.render(gc, g, offset);
+		}
 	}
 	
 	public Vector2f getPosition() {
@@ -65,6 +86,10 @@ public abstract class Tile implements GameObject {
 	
 	public ArrayList<Enemy> getEnemiesOnTile() {
 		return this.enemiesOnTile;
+	}
+	
+	public ArrayList<TileEffect> getTileEffects() {
+		return this.tileEffects;
 	}
 	
 	@Override
@@ -121,6 +146,14 @@ public abstract class Tile implements GameObject {
 	
 	public Vector2f getOffset() {
 		return (this.worldPosition.copy()).scale(TowerDefense.SCALE);
+	}
+
+	public void addEffect(TileEffect tileEffect) {
+		this.tileEffects.add(tileEffect);		
+	}
+	
+	public void removeEffect(int index) {
+		this.tileEffects.remove(index);
 	}
 	
 }
