@@ -22,7 +22,12 @@ public class GameplayState extends BasicGameState implements MouseListener {
 	private EnemyManager enemyManager;
 	private Camera camera;
 	public static enum GameState {NORMAL, PAUSED, WIN, LOSE, PLACE};
+<<<<<<< HEAD
 	public GameState currentState = GameState.PLACE;
+=======
+	public GameState currentState = GameState.NORMAL;
+	public GameGUI gui;
+>>>>>>> origin/David-dev
 	
 	/*
 	 * gameStates
@@ -52,6 +57,7 @@ public class GameplayState extends BasicGameState implements MouseListener {
 			this.enemyManager = new EnemyManager(this.getLevel());
 			this.level.loadMap("res/levels/level"+PlayerData.level+"/map.tmx");
 			this.waveManager = new WaveManager(PlayerData.level);
+			this.gui = new GameGUI(this);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	
@@ -64,6 +70,7 @@ public class GameplayState extends BasicGameState implements MouseListener {
 		this.towerManager.render(gc, sbg, g, offset);
 		this.enemyManager.render(gc, sbg, g, offset);
 		this.camera.render(gc, g, offset);
+		this.gui.render(gc, sbg, g);
 	}
 
 	@Override
@@ -77,12 +84,17 @@ public class GameplayState extends BasicGameState implements MouseListener {
 		switch (this.currentState) {
 			case PLACE:
 				if (i.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-					Tile hoverTile = this.getLevel().getHoverTile();
-					if (hoverTile.getTileType() == TileType.BUILDABLE)
-						if (((BuildableTile)hoverTile).isBuildable())
-							this.towerManager.addTower(this.level, hoverTile);
-						else if (!((BuildableTile)hoverTile).isBuildable())
-							this.towerManager.removeTower(hoverTile);
+					if(my <= 512){
+						Tile hoverTile = this.getLevel().getHoverTile();
+						if (hoverTile.getTileType() == TileType.BUILDABLE)
+							if (((BuildableTile)hoverTile).isBuildable()){
+								this.towerManager.addTower(this.level, hoverTile);
+								this.currentState = GameState.NORMAL;
+								this.gui.resetButtons();
+							}
+							else if (!((BuildableTile)hoverTile).isBuildable())
+								this.towerManager.removeTower(hoverTile);
+					}
 				}	
 			case NORMAL:
 				this.camera.update(gc, sbg, this, delta);
@@ -90,6 +102,18 @@ public class GameplayState extends BasicGameState implements MouseListener {
 				this.waveManager.update(gc, sbg, this.enemyManager, delta);
 				this.enemyManager.update(gc, sbg, this, delta);
 				this.towerManager.update(gc, sbg, this, delta);
+				this.gui.update(gc, sbg, delta);
+				if (i.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+					if(my <= 512){
+						Tile hoverTile = this.getLevel().getHoverTile();
+						if (hoverTile.getTileType() == TileType.BUILDABLE) {
+							this.gui.towerselect = ((BuildableTile)hoverTile).getTower();
+						}
+						else {
+							this.gui.towerselect = null;
+						}
+					}
+				}
 				break;
 			case PAUSED:
 				break;
@@ -124,17 +148,8 @@ public class GameplayState extends BasicGameState implements MouseListener {
 		return this.towerManager;
 	}
 	
-	public void mouseWheelMoved(int change) {
-		if (change > 0)
-			TowerDefense.SCALE += 1;
-		if (change < 0 && TowerDefense.SCALE > 1)
-			TowerDefense.SCALE -= 1;
-	}
-	
-	public void mouseDragged(int oldx, int oldy, int newx, int newy) {
-		float dx = (newx - oldx) *(-1);
-		float dy = (newy - oldy) * (-1);
-		this.camera.moveCamera(new Vector2f(dx, dy));
+	public void mouseClicked(int button, int x, int y, int clickCount){
+		this.gui.mouseClicked(button, x, y, clickCount);
 	}
 	
 	/**
