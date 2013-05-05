@@ -22,12 +22,8 @@ public class GameplayState extends BasicGameState implements MouseListener {
 	private EnemyManager enemyManager;
 	private Camera camera;
 	public static enum GameState {NORMAL, PAUSED, WIN, LOSE, PLACE};
-<<<<<<< HEAD
-	public GameState currentState = GameState.PLACE;
-=======
 	public GameState currentState = GameState.NORMAL;
 	public GameGUI gui;
->>>>>>> origin/David-dev
 	
 	/*
 	 * gameStates
