@@ -1,0 +1,7 @@
+#range,damage,firerate,cost,spriteGroup,aniTotalDuration
+#MG
+1,2,200,5,0,10
+#Rocket
+2,10,2000,20,1,10
+#Slow
+1,0,3000,10,2,10

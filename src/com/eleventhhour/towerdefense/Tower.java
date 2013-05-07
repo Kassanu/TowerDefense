@@ -15,6 +15,27 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public abstract class Tower {
 	
+	/**
+	 * Default settings array for towers
+	 * 
+	 * These are loading in from the towerPref.txt when a map is selected.
+	 * 
+	 * Each index in the array is for a specific type of tower. they are as follows:
+	 * 
+	 * 0 - MGtower
+	 * 1 - Rtower
+	 * 2 - SlowTower
+	 * 
+	 * Each tower array has indexes that correspond to an towers stats, they are as follows:
+	 * 0 = range
+	 * 1 = damage
+	 * 2 = firerate
+	 * 3 = cost
+	 * 4 = spriteGroup (where in the sprite sheet their sprites are)
+	 * 5 = aniTotalDuration
+	 */
+	protected static int DEFAULTVALUES[][];
+	
 	public static Image spriteSheet;
 	
 	public final long ID;
@@ -30,7 +51,11 @@ public abstract class Tower {
 	public int damage = 0;
 	public int firerate = 0;
 	public int cooldown = 0;
-	public String color = "FFFFFF";
+	protected int animationFrame; //current frame being animated
+	protected int aniType; //The type of animation up,left,down,right
+	protected int aniTotalDuration; //Total duration of animationFrame
+	protected int aniCurrentDuration; //current duration of this animationFrame
+	protected int spriteGroup; //group on the sprite sheet this enemy gets it's sprite from
 	
 	public Tower(long lASTID, Tile pos, Level level){
 		this.ID = lASTID;
@@ -102,4 +127,20 @@ public abstract class Tower {
 	}
 
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {}
+	
+	/**
+	 * setDefaults -
+	 * 
+	 * Sets the DEFAULTVALUES array from the supplied array list.
+	 * 
+	 * @param prefList
+	 */
+	public static void setDefaults(ArrayList<int[]> prefList) {
+		Tower.DEFAULTVALUES = new int[prefList.size()][6];
+		
+		for (int i = 0; i < Tower.DEFAULTVALUES.length; i++) {
+			Tower.DEFAULTVALUES[i] = prefList.get(i);
+		}
+		
+	}
 }

@@ -2,7 +2,7 @@ package com.eleventhhour.towerdefense;
 
 public class PlayerData {
 
-	public static int health = 0, score = 0, money = 0, level = 0;
+	public static int health = 0, score = 0, money = 0, level = 0, multiplier = 0;
 	private static PlayerData instance = null;
 
 	protected PlayerData() { }
@@ -18,6 +18,7 @@ public class PlayerData {
 		PlayerData.score = 0;
 		PlayerData.money = 100;
 		PlayerData.level = 0;
+		PlayerData.multiplier = 1;
 	}
 
 	public static void decreaseHealth(int value) {
@@ -25,7 +26,7 @@ public class PlayerData {
 	}
 	
 	public static void increaseMoney(int value) {
-		PlayerData.money += value;
+		PlayerData.money += (value * PlayerData.multiplier);
 	}
 	
 	public static void decreaseMoney(int value) {
@@ -33,13 +34,21 @@ public class PlayerData {
 	}
 	
 	public static void increaseScore(int value) {
-		PlayerData.score += value;
+		PlayerData.score += (value * PlayerData.multiplier);
 	}
 	
 	public static void decreaseScore(int value) {
 		PlayerData.score -= value;
 	}
-
+	
+	public static void increaseMultiplier(int value) {
+		PlayerData.multiplier += value;
+	}
+	
+	public static void resetMultiplier() {
+		PlayerData.multiplier = 1;
+	}
+	
 	public static void setLevel(int l) {
 		PlayerData.level = l;
 		

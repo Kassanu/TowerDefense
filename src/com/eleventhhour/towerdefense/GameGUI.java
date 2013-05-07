@@ -1,5 +1,7 @@
 package com.eleventhhour.towerdefense;
 
+import java.io.File;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -31,10 +33,10 @@ public class GameGUI{
 		this.buildS = false;
 		this.towerselect = null;
 		try {
-			this.rocket = new Image("res/rocketb.png");
-			this.mgun = new Image("res/machineb.png");
-			this.slow = new Image("res/slowb.png");
-			this.cancel = new Image("res/cancel.png");
+			this.rocket = new Image("res" + File.separator +"rocketb.png");
+			this.mgun = new Image("res" + File.separator +"machineb.png");
+			this.slow = new Image("res" + File.separator +"slowb.png");
+			this.cancel = new Image("res" + File.separator +"cancel.png");
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
@@ -143,4 +145,14 @@ public class GameGUI{
 		this.buildR = false;
 		this.buildM = false;
 	}
+	
+	public int getTowerType() {
+		if (this.buildM)
+			return 0;
+		else if (this.buildR)
+			return 1;
+		
+		return 2;
+	}
+	
 }

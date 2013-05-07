@@ -35,6 +35,7 @@ public class TowerDefense extends StateBasedGame {
  
  
     public static void main(String[] args) throws SlickException {
+    	System.out.println(System.getProperty("java.runtime.version"));
 		try {
 			PlayerData.getInstance();
 			AppGameContainer app = new AppGameContainer(new TowerDefense());

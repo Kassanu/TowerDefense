@@ -9,13 +9,16 @@ public class Rtower extends Tower {
 	
 	public Rtower(long lASTID, Tile pos, Level level){
 		super(lASTID, pos, level);
-		this.cost = 30;
-		this.range = 3;
-		this.damage = 20;
-		this.firerate = 3000;
-		this.color = "FF6600";
+		this.range = (int) Tower.DEFAULTVALUES[1][0];
+		this.damage = (int) Tower.DEFAULTVALUES[1][1];
+		this.firerate = (int) Tower.DEFAULTVALUES[1][2];
+		this.cost = (int) Tower.DEFAULTVALUES[1][3];
+		this.spriteGroup = (int) Tower.DEFAULTVALUES[1][4];
+		this.aniTotalDuration = (int) Tower.DEFAULTVALUES[1][5];
+		this.animationFrame = 0;
+		this.aniType = 0;
+		this.aniCurrentDuration = 0;
 		this.setAttackable(this.level.getAttackableTiles(this.position.getPosition(), this.range));
-		System.out.println(Arrays.toString(this.attackable));
 	}
 	
 	@Override

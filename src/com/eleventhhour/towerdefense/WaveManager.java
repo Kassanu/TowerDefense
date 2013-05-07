@@ -1,5 +1,6 @@
 package com.eleventhhour.towerdefense;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -17,9 +18,11 @@ public class WaveManager {
 	public Wave[] waves;
 	public static final int TIMEBETWEENWAVES = 10 * 1000; //multiply by 1000 for milliseconds
 	public int nextWaveIn = 0;
+	public int healthStart = 0; //players starting health on this wave
 	
 	public WaveManager(int level) {
 		this.loadWaves(level);
+		this.healthStart = PlayerData.health;
 	}
 	/**
 	 * loadWaves -
@@ -30,7 +33,7 @@ public class WaveManager {
 	private void loadWaves(int level) {
 		Scanner scanner = null;
 		try {
-			scanner = new Scanner(new FileInputStream("res/levels/level"+level+"/waves.txt"));
+			scanner = new Scanner(new FileInputStream("res" + File.separator +"levels" + File.separator +"level"+level+File.separator +"waves.txt"));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -63,6 +66,10 @@ public class WaveManager {
 				if (this.waves[this.currentWave].isOver()) {
 					this.waveOver = true;
 					this.nextWaveIn = WaveManager.TIMEBETWEENWAVES;
+					//wave is over, check to see if the player lost any health, if not increase their multiplier by 1
+					if (this.healthStart <= PlayerData.health)
+						PlayerData.increaseMultiplier(1);
+					this.healthStart = PlayerData.health;
 				}
 				else {
 					this.waves[this.currentWave].update(gc, sbg, enemyManager, delta);

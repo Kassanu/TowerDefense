@@ -1,5 +1,6 @@
 package com.eleventhhour.towerdefense;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 
 import org.newdawn.slick.GameContainer;
@@ -51,7 +52,7 @@ public class GameplayState extends BasicGameState implements MouseListener {
 			this.setLevel(new Level(this, gc.getWidth(), gc.getHeight(), new Vector2f(0,00)));
 			this.towerManager = new TowerManager();
 			this.enemyManager = new EnemyManager(this.getLevel());
-			this.level.loadMap("res/levels/level"+PlayerData.level+"/map.tmx");
+			this.level.loadMap("res" + File.separator +"levels" + File.separator +"level"+PlayerData.level+ File.separator +"map.tmx");
 			this.waveManager = new WaveManager(PlayerData.level);
 			this.gui = new GameGUI(this);
 		} catch (Exception e) {
@@ -65,7 +66,6 @@ public class GameplayState extends BasicGameState implements MouseListener {
 		this.level.render(gc, sbg, g, this, offset);
 		this.towerManager.render(gc, sbg, g, offset);
 		this.enemyManager.render(gc, sbg, g, offset);
-		this.camera.render(gc, g, offset);
 		this.gui.render(gc, sbg, g);
 	}
 
@@ -84,7 +84,8 @@ public class GameplayState extends BasicGameState implements MouseListener {
 						Tile hoverTile = this.getLevel().getHoverTile();
 						if (hoverTile.getTileType() == TileType.BUILDABLE)
 							if (((BuildableTile)hoverTile).isBuildable()){
-								this.towerManager.addTower(this.level, hoverTile);
+								int towerType = this.gui.getTowerType();
+								this.towerManager.addTower(this.level, hoverTile, towerType);
 								this.currentState = GameState.NORMAL;
 								this.gui.resetButtons();
 							}

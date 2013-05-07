@@ -72,7 +72,7 @@ public class Level {
 					//create BoundryTile
 					this.tiles[i][j] = new BoundryTile(tileId++, tiledmap.getTileImage(i, j, 0), new Vector2f(i,j), this.getTileWorldPosition(i, j), TileType.BOUNDRY);
 				}
-				
+				System.out.println("["+i+","+j+"] = " + this.tiles[i][j]);
 				//determine if start or end waypoint
 				tileID = tiledmap.getTileId(i, j, 1);
 				
@@ -82,11 +82,13 @@ public class Level {
 					waypoint = tiledmap.getTileProperty(tileID, "start", "false");
 					if (waypoint.equals("true")) {
 						this.startpoint = new Vector2f(i,j);
+						System.out.println(this.startpoint);
 					}
 					else {
 						waypoint = tiledmap.getTileProperty(tileID, "end", "false");
 						if (waypoint.equals("true")) {
 							this.endpoint = new Vector2f(i,j);
+							System.out.println(this.endpoint);
 						}
 					}
 				}
@@ -187,7 +189,7 @@ public class Level {
 						g.setColor(Color.red);
 					g.drawRect(((i * TowerDefense.TILESIZE) + offset.x) * TowerDefense.SCALE, ((j * TowerDefense.TILESIZE) + offset.y) * TowerDefense.SCALE, TowerDefense.TILESIZE * TowerDefense.SCALE - 1, (TowerDefense.TILESIZE * TowerDefense.SCALE) - 1);
 				}
-				
+				/*
 				if (i == this.startpoint.x && j == this.startpoint.y) {
 					g.setColor(new Color(0,127,4));
 					g.drawRoundRect(((i * TowerDefense.TILESIZE) + offset.x) * TowerDefense.SCALE, ((j * TowerDefense.TILESIZE) + offset.y) * TowerDefense.SCALE, (TowerDefense.TILESIZE * TowerDefense.SCALE) - 1, (TowerDefense.TILESIZE * TowerDefense.SCALE) - 1,64);
@@ -196,13 +198,13 @@ public class Level {
 				if (i == this.endpoint.x && j == this.endpoint.y) {
 					g.setColor(new Color(255,0,0));
 					g.drawRoundRect(((i * TowerDefense.TILESIZE) + offset.x) * TowerDefense.SCALE, ((j * TowerDefense.TILESIZE) + offset.y) * TowerDefense.SCALE, (TowerDefense.TILESIZE * TowerDefense.SCALE) - 1, (TowerDefense.TILESIZE * TowerDefense.SCALE) - 1,64);
-				}
+				}*/
 			}
 		}
 		
-		for (Waypoint waypoint : this.waypoints) {
+		/*for (Waypoint waypoint : this.waypoints) {
 			waypoint.render(gc, g, offset);
-		}
+		}*/
 		
 	}
 	

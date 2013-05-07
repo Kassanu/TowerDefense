@@ -1,7 +1,12 @@
 package com.eleventhhour.towerdefense;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.Map.Entry;
 
 import org.newdawn.slick.GameContainer;
@@ -22,15 +27,50 @@ public class EnemyManager {
 	
 	public EnemyManager(Level level) {
 		this.level = level;
+		this.loadEnemyPref();
 		this.enemyPool = new EnemyPool();
 		this.enemies = new HashMap<Long, Enemy>();
 		this.toBeRemoved = new ArrayList<Long>();
 	}
 	
 	public EnemyManager(int poolSize) {
+		this.loadEnemyPref();
 		this.enemyPool = new EnemyPool(poolSize);
 		this.enemies = new HashMap<Long, Enemy>();
 		this.toBeRemoved = new ArrayList<Long>();
+	}
+	
+	/**
+	 * loadEnemyPref -
+	 * 
+	 * loads enemy preferences from a text file.  This allows us to tweak the enemies without having to repack the game.
+	 * 
+	 */
+	private void loadEnemyPref() {
+		Scanner scanner = null;
+		try {
+			scanner = new Scanner(new FileInputStream("res" + File.separator + "enemyPref.txt"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	
+		String currentLine;
+		String[] currentLineArray;
+		ArrayList<double[]> prefList = new ArrayList<double[]>();
+		double[] enemyPrefs = new double[6];
+		while (scanner.hasNext()) {
+			currentLine = scanner.nextLine();
+			//if the line starts with a # it's a comment so ignore it.
+			if (!(currentLine.substring(0, 1)).equals("#")) {
+				currentLineArray = currentLine.split(",");
+				for (int i = 0; i < currentLineArray.length; i++) {
+					enemyPrefs[i] = Double.parseDouble(currentLineArray[i]);
+				}
+				prefList.add(Arrays.copyOf(enemyPrefs, 6));
+			}
+		}
+		
+		Enemy.setDefaults(prefList);
 	}
 	
 	public void spawnEnemy(int enemyType) {

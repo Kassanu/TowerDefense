@@ -1,5 +1,6 @@
 package com.eleventhhour.towerdefense;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -22,7 +23,15 @@ public class Enemy implements GameObject {
 	/**
 	 * Default settings array for enemies
 	 * 
-	 * Each index in the array is for a specific type of enemy.
+	 * These are loading in from the enemyPref.txt when a map is selected.
+	 * 
+	 * Each index in the array is for a specific type of enemy. they are as follows:
+	 * 
+	 * 0 - soldier
+	 * 1 - juggernaut
+	 * 2 - jeep
+	 * 3 - tank
+	 * 
 	 * Each enemy array has indexes that correspond to an enemies stats, they are as follows:
 	 * 0 = health
 	 * 1 = speed
@@ -31,10 +40,7 @@ public class Enemy implements GameObject {
 	 * 4 = spriteGroup (where in the sprite sheet their sprite is.  Each enemy has 4 rows of sprites so their position on the sprite group is always ((4*spriteGroup) + aniType) * tileSize)
 	 * 5 = aniTotalDuration
 	 */
-	private static final double DEFAULTVALUES[][] = {
-		{20.0,20,100.0,1,0,10},
-		{20.0,40,100.0,2,0,20}
-	};
+	private static double DEFAULTVALUES[][];
 
 	private static Image spriteSheet = null;
 	
@@ -82,7 +88,7 @@ public class Enemy implements GameObject {
 		this.waypoint = null;
 		if (Enemy.spriteSheet == null) {
 			try {
-				Enemy.spriteSheet = new Image("res/enemysheet.png");
+				Enemy.spriteSheet = new Image("res" + File.separator +"enemysheet.png");
 			} catch (SlickException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -110,7 +116,7 @@ public class Enemy implements GameObject {
 		this.waypoint = waypoint;
 		this.waypointNumber = 0;
 		this.calcCenterPosition();
-		this.collidable = new Collidable(this, CollisionShape.RECTANGLE, new Vector2f(centerPosition.x - 2, centerPosition.y - 2), 4, 4, 2);
+		this.collidable = new Collidable(this, CollisionShape.RECTANGLE, new Vector2f(centerPosition.x - 1, centerPosition.y - 1), 2, 2, 2);
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta){
@@ -126,12 +132,11 @@ public class Enemy implements GameObject {
 					break;
 				case SPEED:
 					this.currentSpeed /= (int) tileEffect.getModifier(); 
-					System.out.println("I'm being slowed");
 					break;
 			}
 		}
 		this.movement = this.waypoint.getCollidable().getCenterPosition().copy();
-		this.movement = this.movement.sub(this.centerPosition);
+		this.movement = this.movement.sub(this.centerPosition);	
 		this.movement = this.movement.normalise();
 		this.movement = this.movement.scale(this.currentSpeed / delta);
 		this.worldPosition = this.worldPosition.add(this.movement);
@@ -139,8 +144,14 @@ public class Enemy implements GameObject {
 		this.tilePosition = gs.getLevel().getTileGridPosition(this.centerPosition).copy();
 		this.collidable.update(movement);
 		if (this.checkAtWaypoint()) {
+			
+			//hopefully resolve enemies being off the path and not turning properly?? 
+			 this.worldPosition = this.waypoint.getWorldPosition().copy();
+			 this.calcCenterPosition();
+			
 			if (gs.getLevel().isLastWaypoint(this.waypointNumber)) {
 				PlayerData.decreaseHealth(1);
+				PlayerData.resetMultiplier();
 				this.health = 0;
 			}
 			else {
@@ -150,25 +161,25 @@ public class Enemy implements GameObject {
 		
 		//sprite stuff
 		this.aniCurrentDuration += delta;
-		
 		// check the movement  of the enemy to determine which way they are facing
 		// checking if the aniType matches should ensure that the if will fail quickly and prevent the duration from reseting every tick
-		if (this.aniType != 2 && (int)this.movement.x > 0) {
+		//why are floats so painful?
+		if (this.aniType != 2 && this.movement.x > 0.0) {
 			this.aniType = 2;
 			this.aniCurrentDuration = 0;
 		}
-		else if (this.aniType != 3 && (int)this.movement.x < 0 ) {
+		else if (this.aniType != 3 && this.movement.x < 0.0) {
 			this.aniType = 3;
 			this.aniCurrentDuration = 0;
 		}
-		else if (this.aniType != 1 && (int)this.movement.y > 0) {
+		else if (this.aniType != 1 && this.movement.y > 0.0) {
 			this.aniType = 1;
 			this.aniCurrentDuration = 0;
 		}
-		else if (this.aniType != 0 && (int)this.movement.y < 0) {
+		else if (this.aniType != 0 && this.movement.y < 0.0) {
 			this.aniType = 0;
 			this.aniCurrentDuration = 0;
-		}
+		}	
 		
 		if (this.aniCurrentDuration >= this.aniTotalDuration) {
 			this.animationFrame = ((this.animationFrame+1) % 4);
@@ -182,8 +193,6 @@ public class Enemy implements GameObject {
 	}
 	
 	public void render(GameContainer gc, Graphics g, Vector2f offset){
-		g.setColor(Color.red);
-		this.collidable.render(gc, g, offset);		
 		//render sprite by drawing the spritesheet at the correct position denoted by x = animationFrame * 32, y = ((4*spriteGroup) + aniType) * tileSize
 		float x = (this.worldPosition.x + offset.x) * TowerDefense.SCALE;
 		float y = (this.worldPosition.y + offset.y) * TowerDefense.SCALE;
@@ -197,6 +206,8 @@ public class Enemy implements GameObject {
 	
 	public void getAttacked(int damage) {
 		this.health -= damage;
+		if (this.isDead())
+			this.onDeath();
 	}
 	
 	public boolean isDead() {
@@ -204,8 +215,8 @@ public class Enemy implements GameObject {
 	}
 	
 	public void onDeath() {
-		PlayerData.increaseMoney(1);
-		PlayerData.increaseScore(1);
+		PlayerData.increaseMoney(this.moneyReward);
+		PlayerData.increaseScore(this.scoreReward);
 	}
 	
 	/**
@@ -258,6 +269,22 @@ public class Enemy implements GameObject {
 
 	public int getHealth() {
 		return this.health;
+	}
+	
+	/**
+	 * setDefaults -
+	 * 
+	 * Sets the DEFAULTVALUES array from the supplied array list.
+	 * 
+	 * @param prefList
+	 */
+	public static void setDefaults(ArrayList<double[]> prefList) {
+		Enemy.DEFAULTVALUES = new double[prefList.size()][6];
+		
+		for (int i = 0; i < Enemy.DEFAULTVALUES.length; i++) {
+			Enemy.DEFAULTVALUES[i] = prefList.get(i);
+		}
+		
 	}
 	
 }

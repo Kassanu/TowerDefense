@@ -30,7 +30,7 @@ public class Waypoint implements GameObject {
 		this.height = height;
 		this.radius = radius;
 		this.calcCenterPosition();
-		this.collidable = new Collidable(this, CollisionShape.RECTANGLE, new Vector2f(centerPosition.x - 3, centerPosition.y - 3), 2, 2, 1);
+		this.collidable = new Collidable(this, CollisionShape.RECTANGLE, new Vector2f(centerPosition.x - 1, centerPosition.y - 1), 2, 2, 1);
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {}

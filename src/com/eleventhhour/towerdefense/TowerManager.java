@@ -1,7 +1,12 @@
 package com.eleventhhour.towerdefense;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Scanner;
 import java.util.Map.Entry;
 
 import org.newdawn.slick.GameContainer;
@@ -20,18 +25,59 @@ public class TowerManager {
 	private BulletPool bulletPool;
 	
 	public TowerManager() {
+		this.loadTowerPref();
 		this.towers = new HashMap<Long, Tower>();
 		this.bulletPool = new BulletPool();
 		this.bullets = new HashMap<Long, Bullet>();
 		this.toBeRemoved = new ArrayList<Long>();
 	}
 	
-	public void addTower(Level level, Tile tile) {
-		//Rtower t = new Rtower(LASTID, tile, level);
-		SlowTower t = new SlowTower(LASTID, tile, level);
+	/**
+	 * loadTowerPref -
+	 * 
+	 * loads tower preferences from a text file.  This allows us to tweak the towers without having to repack the game.
+	 * 
+	 */
+	private void loadTowerPref() {
+		Scanner scanner = null;
+		try {
+			scanner = new Scanner(new FileInputStream("res" + File.separator + "towerPref.txt"));
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	
+		String currentLine;
+		String[] currentLineArray;
+		ArrayList<int[]> prefList = new ArrayList<int[]>();
+		int[] towerPref = new int[6];
+		while (scanner.hasNext()) {
+			currentLine = scanner.nextLine();
+			//if the line starts with a # it's a comment so ignore it.
+			if (!(currentLine.substring(0, 1)).equals("#")) {
+				currentLineArray = currentLine.split(",");
+				for (int i = 0; i < currentLineArray.length; i++) {
+					towerPref[i] = Integer.parseInt(currentLineArray[i]);
+				}
+				prefList.add(Arrays.copyOf(towerPref, 6));
+			}
+		}
+		
+		Tower.setDefaults(prefList);
+	}
+	
+	public void addTower(Level level, Tile tile,int type) {
+		Tower t;
+		if (type == 0)
+			t = new MGtower(LASTID, tile, level);
+		else if (type == 1)
+			t = new Rtower(LASTID, tile, level);
+		else
+			t = new SlowTower(LASTID, tile, level);
+		
 		towers.put(LASTID, t);
 		((BuildableTile)tile).addTower(t);
 		LASTID++;
+		PlayerData.decreaseMoney(t.cost);
 	}
 	
 	public void removeTower(Tile tile) {

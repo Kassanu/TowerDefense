@@ -38,8 +38,8 @@ public class LevelSelectorState extends BasicGameState implements MouseListener 
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		this.sbg = sbg;
 		gc.getGraphics().setBackground(bgcolor);
-		this.arrow = new Image("res/arrow.png");
-		this.play = new Image("res/play.png");
+		this.arrow = new Image("res" + File.separator +"arrow.png");
+		this.play = new Image("res" + File.separator +"play.png");
 		this.centerX = gc.getWidth() / 2;
 		this.centerY = gc.getHeight() / 2;
 		this.playButton = new Rectangle(this.centerX - (this.play.getWidth() / 2), gc.getWidth() - 130, this.play.getWidth(), this.play.getHeight());
@@ -49,11 +49,11 @@ public class LevelSelectorState extends BasicGameState implements MouseListener 
 	}
 	
 	public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		File levelDirectory = new File("res/levels");
+		File levelDirectory = new File("res" + File.separator +"levels");
 		this.levels = levelDirectory.listFiles();
 		this.levelImages = new Image[this.levels.length];
 		for (int i = 0; i < this.levelImages.length; i++)
-			this.levelImages[i] = new Image(this.levels[i] + "/level.png");
+			this.levelImages[i] = new Image(this.levels[i] + File.separator + "level.png");
 	}
 	
 	@Override
