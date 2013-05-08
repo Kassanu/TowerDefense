@@ -86,7 +86,6 @@ public class GameGUI{
 	}
 	
 	public void mouseClicked(int button, int x, int y, int clickCount){
-		System.out.println(button);
 		if(this.RTbutton.contains(x, y)){
 			if(buildR){
 				this.RTBimage = this.rocket;

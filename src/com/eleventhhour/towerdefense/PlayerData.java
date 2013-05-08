@@ -14,7 +14,7 @@ public class PlayerData {
 	}
 	
 	public static void resetPlayer() {
-		PlayerData.health = 20;
+		PlayerData.health = 1;
 		PlayerData.score = 0;
 		PlayerData.money = 100;
 		PlayerData.level = 0;

@@ -11,12 +11,13 @@ public class SlowTower extends Tower {
 
 	public SlowTower(long lASTID, Tile pos, Level level){
 		super(lASTID, pos, level);
-		this.range = (int) Tower.DEFAULTVALUES[2][0];
-		this.damage = (int) Tower.DEFAULTVALUES[2][1];
-		this.firerate = (int) Tower.DEFAULTVALUES[2][2];
-		this.cost = (int) Tower.DEFAULTVALUES[2][3];
-		this.spriteGroup = (int) Tower.DEFAULTVALUES[2][4];
-		this.aniTotalDuration = (int) Tower.DEFAULTVALUES[2][5];
+		this.towerLevel = 0;
+		this.range = Tower.DEFAULTVALUES[2][this.towerLevel][0];
+		this.damage = Tower.DEFAULTVALUES[2][this.towerLevel][1];
+		this.firerate = Tower.DEFAULTVALUES[2][this.towerLevel][2];
+		this.cost = Tower.DEFAULTVALUES[2][this.towerLevel][3];
+		this.spriteGroup = Tower.DEFAULTVALUES[2][this.towerLevel][4];
+		this.aniTotalDuration = Tower.DEFAULTVALUES[2][this.towerLevel][5];
 		this.animationFrame = 0;
 		this.aniType = 0;
 		this.aniCurrentDuration = 0;
@@ -26,14 +27,18 @@ public class SlowTower extends Tower {
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta){
 		if (this.cooldown <= 0) {
+			this.attacking = true;
 			for (Tile attackableTile : this.attackable) {
 				attackableTile.addEffect(new TileEffect(EffectType.SPEED, 2, 2000, attackableTile));
 			}
 			this.cooldown = this.firerate;
 		}
 		else {
+			this.attacking = false;
 			this.cooldown -= delta;
 		}
+		//sprite stuff is handled in super
+		super.update(gc, sbg, gs, delta);
 	}
 	
 }

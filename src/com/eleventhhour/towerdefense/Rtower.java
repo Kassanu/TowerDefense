@@ -9,12 +9,13 @@ public class Rtower extends Tower {
 	
 	public Rtower(long lASTID, Tile pos, Level level){
 		super(lASTID, pos, level);
-		this.range = (int) Tower.DEFAULTVALUES[1][0];
-		this.damage = (int) Tower.DEFAULTVALUES[1][1];
-		this.firerate = (int) Tower.DEFAULTVALUES[1][2];
-		this.cost = (int) Tower.DEFAULTVALUES[1][3];
-		this.spriteGroup = (int) Tower.DEFAULTVALUES[1][4];
-		this.aniTotalDuration = (int) Tower.DEFAULTVALUES[1][5];
+		this.towerLevel = 0;
+		this.range = Tower.DEFAULTVALUES[1][this.towerLevel][0];
+		this.damage = Tower.DEFAULTVALUES[1][this.towerLevel][1];
+		this.firerate = Tower.DEFAULTVALUES[1][this.towerLevel][2];
+		this.cost = Tower.DEFAULTVALUES[1][this.towerLevel][3];
+		this.spriteGroup = Tower.DEFAULTVALUES[1][this.towerLevel][4];
+		this.aniTotalDuration = Tower.DEFAULTVALUES[1][this.towerLevel][5];
 		this.animationFrame = 0;
 		this.aniType = 0;
 		this.aniCurrentDuration = 0;
@@ -26,6 +27,7 @@ public class Rtower extends Tower {
 		if (this.cooldown <= 0) {
 			Enemy enemy = this.selectEnemyToAttack();
 			if (enemy != null) {
+				this.attacking = true;
 				gs.getTowerManager().spawnBullet(this.centerPosition.copy(), enemy.getCenterPosition());
 				this.attack(enemy);
 				Tile tile = this.attackable[this.attackingTileNum];
@@ -34,8 +36,11 @@ public class Rtower extends Tower {
 			}
 		}
 		else {
+			this.attacking = false;
 			this.cooldown -= delta;
 		}
+		//sprite stuff is handled in super
+		super.update(gc, sbg, gs, delta);
 	}
 	
 }

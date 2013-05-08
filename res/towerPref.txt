@@ -1,7 +1,8 @@
 #range,damage,firerate,cost,spriteGroup,aniTotalDuration
+#each tower upgrade is separated by a ; (ONLY TWO LEVELS!!!)
 #MG
-1,2,200,5,0,10
+1,2,200,5,0,10;1,4,200,5,1,10
 #Rocket
-2,10,2000,20,1,10
+2,10,2000,20,2,10;2,10,1500,20,3,10
 #Slow
-1,0,3000,10,2,10
+1,0,3000,10,4,10;1,0,2500,10,5,10

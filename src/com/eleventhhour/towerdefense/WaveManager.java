@@ -13,11 +13,11 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class WaveManager {
 	
-	public int currentWave = 0;
-	public boolean waveOver = false;
+	public int currentWave = -1;
+	public boolean waveOver = true;
 	public Wave[] waves;
 	public static final int TIMEBETWEENWAVES = 10 * 1000; //multiply by 1000 for milliseconds
-	public int nextWaveIn = 0;
+	public int nextWaveIn = WaveManager.TIMEBETWEENWAVES;
 	public int healthStart = 0; //players starting health on this wave
 	
 	public WaveManager(int level) {

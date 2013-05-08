@@ -72,7 +72,6 @@ public class Level {
 					//create BoundryTile
 					this.tiles[i][j] = new BoundryTile(tileId++, tiledmap.getTileImage(i, j, 0), new Vector2f(i,j), this.getTileWorldPosition(i, j), TileType.BOUNDRY);
 				}
-				System.out.println("["+i+","+j+"] = " + this.tiles[i][j]);
 				//determine if start or end waypoint
 				tileID = tiledmap.getTileId(i, j, 1);
 				
@@ -82,13 +81,11 @@ public class Level {
 					waypoint = tiledmap.getTileProperty(tileID, "start", "false");
 					if (waypoint.equals("true")) {
 						this.startpoint = new Vector2f(i,j);
-						System.out.println(this.startpoint);
 					}
 					else {
 						waypoint = tiledmap.getTileProperty(tileID, "end", "false");
 						if (waypoint.equals("true")) {
 							this.endpoint = new Vector2f(i,j);
-							System.out.println(this.endpoint);
 						}
 					}
 				}
@@ -98,12 +95,7 @@ public class Level {
 		
 		if (this.startpoint == null || this.endpoint == null)
 			throw new Exception("Levels must have a start and end point");
-		long begin = System.currentTimeMillis();
 		findPath();
-		long end = System.currentTimeMillis();
-		double total = (end - begin) / 1000f;
-		
-		System.out.println("Took " + total + " seconds");
 	}
 	
 	/**
@@ -164,7 +156,6 @@ public class Level {
 		
 		this.waypoints = listWaypoints.toArray(new Waypoint[listWaypoints.size()]);
 		this.path = listPath.toArray(new Vector2f[listPath.size()]);
-		System.out.println(Arrays.toString(this.waypoints));
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {

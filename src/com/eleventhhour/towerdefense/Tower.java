@@ -1,5 +1,6 @@
 package com.eleventhhour.towerdefense;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -10,6 +11,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -20,23 +22,25 @@ public abstract class Tower {
 	 * 
 	 * These are loading in from the towerPref.txt when a map is selected.
 	 * 
-	 * Each index in the array is for a specific type of tower. they are as follows:
+	 * First index in the array is for a specific type of tower. they are as follows:
 	 * 
 	 * 0 - MGtower
 	 * 1 - Rtower
 	 * 2 - SlowTower
 	 * 
-	 * Each tower array has indexes that correspond to an towers stats, they are as follows:
+	 * Second index is for the level of the tower
+	 * 
+	 * Third index is an array that each index corresponds to an towers stats, they are as follows:
 	 * 0 = range
 	 * 1 = damage
 	 * 2 = firerate
 	 * 3 = cost
-	 * 4 = spriteGroup (where in the sprite sheet their sprites are)
+	 * 4 = spriteGroup (where in the sprite sheet their sprite is.  Each tower has 8 rows of sprites so their position on the sprite group is always ((8*spriteGroup) + (aniType + attacking?4:0)) * tileSize)
 	 * 5 = aniTotalDuration
 	 */
-	protected static int DEFAULTVALUES[][];
+	protected static int DEFAULTVALUES[][][];
 	
-	public static Image spriteSheet;
+	public static Image spriteSheet = null;
 	
 	public final long ID;
 	
@@ -51,8 +55,10 @@ public abstract class Tower {
 	public int damage = 0;
 	public int firerate = 0;
 	public int cooldown = 0;
+	public int towerLevel = 0;
 	protected int animationFrame; //current frame being animated
 	protected int aniType; //The type of animation up,left,down,right
+	protected boolean attacking = false; //whether or not they are attacking, adds 4 to aniType to get attacking animation for that rotation
 	protected int aniTotalDuration; //Total duration of animationFrame
 	protected int aniCurrentDuration; //current duration of this animationFrame
 	protected int spriteGroup; //group on the sprite sheet this enemy gets it's sprite from
@@ -64,12 +70,18 @@ public abstract class Tower {
 		this.worldPosition = this.level.getTileWorldPosition(this.position);
 		this.centerPosition = new Vector2f();
 		this.calcCenterPosition();
+		if (Tower.spriteSheet == null) {
+			try {
+				Tower.spriteSheet = new Image("res" + File.separator +"towersheet.png");
+			} catch (SlickException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public void setAttackable(Tile[] attack){
 		this.attackable = attack;
-		
-		System.out.println(Arrays.toString(this.attackable));
 	}
 	
 	public void init(){
@@ -107,13 +119,18 @@ public abstract class Tower {
 	}
 	
 	public void attack(Enemy target) {
-		//System.out.println("Attacking: " + target);
 		target.getAttacked(this.damage);
 	}
 	
 	public void render(GameContainer gc, Graphics g, Vector2f offset){
-		g.setColor(Color.blue);
-		g.drawRect(((this.worldPosition.x + offset.x) * TowerDefense.SCALE) + (((TowerDefense.TILESIZE / 2) * TowerDefense.SCALE) - 5), ((this.worldPosition.y + offset.y ) * TowerDefense.SCALE) + (((TowerDefense.TILESIZE / 2) * TowerDefense.SCALE) - 5), 10, 10);
+		
+		float x = (this.worldPosition.x + offset.x) * TowerDefense.SCALE;
+		float y = (this.worldPosition.y + offset.y) * TowerDefense.SCALE;
+		float srcx = this.animationFrame * TowerDefense.TILESIZE;
+		float srcy = ((8 * this.spriteGroup) + (this.aniType + (this.attacking?4:0))) * TowerDefense.TILESIZE;
+		
+		g.drawImage(Tower.spriteSheet,x ,y,x + TowerDefense.TILESIZE, y + TowerDefense.TILESIZE,  srcx, srcy, srcx + TowerDefense.TILESIZE, srcy + TowerDefense.TILESIZE);
+		
 		//render attackable tiles
 		Vector2f attackablePos = null;
 		for (Tile attackableTile : this.attackable) {
@@ -126,7 +143,17 @@ public abstract class Tower {
 		return this.ID;
 	}
 
-	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {}
+	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {
+		//sprite stuff
+		this.aniCurrentDuration += delta;
+		
+		//possible code to check direction it should face
+		
+		if (this.aniCurrentDuration >= this.aniTotalDuration) {
+			this.animationFrame = ((this.animationFrame+1) % 4);
+			this.aniCurrentDuration = 0;
+		}
+	}
 	
 	/**
 	 * setDefaults -
@@ -135,12 +162,27 @@ public abstract class Tower {
 	 * 
 	 * @param prefList
 	 */
-	public static void setDefaults(ArrayList<int[]> prefList) {
-		Tower.DEFAULTVALUES = new int[prefList.size()][6];
+	public static void setDefaults(ArrayList<ArrayList<int[]>> prefList) {
+		Tower.DEFAULTVALUES = new int[prefList.size()][2][6];
 		
 		for (int i = 0; i < Tower.DEFAULTVALUES.length; i++) {
-			Tower.DEFAULTVALUES[i] = prefList.get(i);
+			for (int j = 0; j < Tower.DEFAULTVALUES[0].length; j++)
+				Tower.DEFAULTVALUES[i][j] = prefList.get(i).get(j);
 		}
 		
 	}
+	
+	/**
+	 * upgradeTower
+	 * 
+	 * Call this method to upgrade the tower.
+	 * 
+	 * For now it will just set the level to one because as of right now
+	 * there is only one upgraded version of each tower
+	 * 
+	 */
+	public void upgradeTower() {
+		this.towerLevel = 1;
+	}
+	
 }

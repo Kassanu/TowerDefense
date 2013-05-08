@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Scanner;
 import java.util.Map.Entry;
 
@@ -47,21 +49,30 @@ public class TowerManager {
 		}
 	
 		String currentLine;
-		String[] currentLineArray;
-		ArrayList<int[]> prefList = new ArrayList<int[]>();
+		String[] lineTowerLevelArray;
+		String[] lineTowerPrefArray;
+		ArrayList<ArrayList<int[]>> prefList = new ArrayList<ArrayList<int[]>>();
+		ArrayList<int[]> levelsList = new ArrayList<int[]>();
 		int[] towerPref = new int[6];
 		while (scanner.hasNext()) {
 			currentLine = scanner.nextLine();
 			//if the line starts with a # it's a comment so ignore it.
 			if (!(currentLine.substring(0, 1)).equals("#")) {
-				currentLineArray = currentLine.split(",");
-				for (int i = 0; i < currentLineArray.length; i++) {
-					towerPref[i] = Integer.parseInt(currentLineArray[i]);
+				lineTowerLevelArray = currentLine.split(";");
+				//now we have an array of all the upgrades
+				//loop through each and split the line by the commas and add it to the array list
+				for (int i = 0; i < lineTowerLevelArray.length; i++) {
+					lineTowerPrefArray = lineTowerLevelArray[i].split(",");
+					for (int j = 0; j < lineTowerPrefArray.length; j++) {
+						towerPref[j] = Integer.parseInt(lineTowerPrefArray[j]);
+					}
+					levelsList.add(Arrays.copyOf(towerPref, towerPref.length));
 				}
-				prefList.add(Arrays.copyOf(towerPref, 6));
+				prefList.add((ArrayList<int[]>) levelsList.clone());
+				levelsList.clear();
 			}
 		}
-		
+				
 		Tower.setDefaults(prefList);
 	}
 	

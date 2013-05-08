@@ -25,7 +25,7 @@ public class GameplayState extends BasicGameState implements MouseListener {
 	public static enum GameState {NORMAL, PAUSED, WIN, LOSE, PLACE};
 	public GameState currentState = GameState.NORMAL;
 	public GameGUI gui;
-	
+	public gameOverGUI gameOverUI;
 	/*
 	 * gameStates
 	 * 
@@ -47,6 +47,7 @@ public class GameplayState extends BasicGameState implements MouseListener {
 	
 	@Override
 	public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException {
+		this.currentState = GameState.NORMAL;
 		try {
 			this.camera = new Camera(0,new Vector2f(0,00), new Vector2f(0,0), 20 * TowerDefense.TILESIZE, 16 * TowerDefense.TILESIZE, 0, this);
 			this.setLevel(new Level(this, gc.getWidth(), gc.getHeight(), new Vector2f(0,00)));
@@ -55,6 +56,7 @@ public class GameplayState extends BasicGameState implements MouseListener {
 			this.level.loadMap("res" + File.separator +"levels" + File.separator +"level"+PlayerData.level+ File.separator +"map.tmx");
 			this.waveManager = new WaveManager(PlayerData.level);
 			this.gui = new GameGUI(this);
+			this.gameOverUI = new gameOverGUI(sbg);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}	
@@ -67,6 +69,12 @@ public class GameplayState extends BasicGameState implements MouseListener {
 		this.towerManager.render(gc, sbg, g, offset);
 		this.enemyManager.render(gc, sbg, g, offset);
 		this.gui.render(gc, sbg, g);
+		switch (this.currentState) {
+			case WIN:
+			case LOSE:
+				this.gameOverUI.render(gc, sbg, g);
+			break;
+		}
 	}
 
 	@Override
@@ -115,15 +123,15 @@ public class GameplayState extends BasicGameState implements MouseListener {
 			case PAUSED:
 				break;
 			case WIN:
+				this.gameOverUI.setWin(true);
 				break;
 			case LOSE:
+				this.gameOverUI.setWin(false);
 				break;
 		}
 		//System.out.println(this.camera.getWorldPosition());
 		if (PlayerData.health <= 0) {
-			//trigger game over
-			System.out.println("GAME OVER");
-			System.exit(0);
+			this.currentState = GameState.LOSE;
 		}
 		
 	}
@@ -145,8 +153,17 @@ public class GameplayState extends BasicGameState implements MouseListener {
 		return this.towerManager;
 	}
 	
-	public void mouseClicked(int button, int x, int y, int clickCount){
-		this.gui.mouseClicked(button, x, y, clickCount);
+	public void mouseClicked(int button, int x, int y, int clickCount) {
+		switch (this.currentState) {
+		case PLACE:
+		case NORMAL:
+			this.gui.mouseClicked(button, x, y, clickCount);
+			break;
+		case WIN:
+		case LOSE:
+			this.gameOverUI.mouseClicked(button, x, y, clickCount);
+			break;
+	}
 	}
 	
 	/**

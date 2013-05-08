@@ -49,6 +49,7 @@ public class LevelSelectorState extends BasicGameState implements MouseListener 
 	}
 	
 	public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException {
+		PlayerData.resetPlayer();
 		File levelDirectory = new File("res" + File.separator +"levels");
 		this.levels = levelDirectory.listFiles();
 		this.levelImages = new Image[this.levels.length];
