@@ -118,4 +118,8 @@ public class EnemyManager {
 		}
 	}
 
+	public boolean isFinished() {
+		return this.enemies.size() == 0;
+	}
+
 }

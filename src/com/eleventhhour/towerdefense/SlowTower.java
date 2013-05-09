@@ -21,6 +21,7 @@ public class SlowTower extends Tower {
 		this.animationFrame = 0;
 		this.aniType = 0;
 		this.aniCurrentDuration = 0;
+		this.towerType = 2;
 		this.setAttackable(this.level.getAttackableTiles(this.position.getPosition(), this.range));
 	}
 	
@@ -29,7 +30,7 @@ public class SlowTower extends Tower {
 		if (this.cooldown <= 0) {
 			this.attacking = true;
 			for (Tile attackableTile : this.attackable) {
-				attackableTile.addEffect(new TileEffect(EffectType.SPEED, 2, 2000, attackableTile));
+				attackableTile.addEffect(new TileEffect(EffectType.SPEED, this.damage, 2000, attackableTile));
 			}
 			this.cooldown = this.firerate;
 		}

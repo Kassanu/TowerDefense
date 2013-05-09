@@ -19,6 +19,7 @@ public class MGtower extends Tower {
 		this.animationFrame = 0;
 		this.aniType = 0;
 		this.aniCurrentDuration = 0;
+		this.towerType = 1;
 		this.setAttackable(this.level.getAttackableTiles(this.position.getPosition(), this.range));
 	}
 	

@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.KeyListener;
 import org.newdawn.slick.MouseListener;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
@@ -14,7 +15,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import com.eleventhhour.towerdefense.Level.TileType;
 
-public class GameplayState extends BasicGameState implements MouseListener {
+public class GameplayState extends BasicGameState implements MouseListener, KeyListener {
 	
 	private int stateId;
 	private Level level;
@@ -90,17 +91,24 @@ public class GameplayState extends BasicGameState implements MouseListener {
 				if (i.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
 					if(my <= 512){
 						Tile hoverTile = this.getLevel().getHoverTile();
-						if (hoverTile.getTileType() == TileType.BUILDABLE)
+						if (hoverTile.getTileType() == TileType.BUILDABLE){
 							if (((BuildableTile)hoverTile).isBuildable()){
-								int towerType = this.gui.getTowerType();
-								this.towerManager.addTower(this.level, hoverTile, towerType);
-								this.currentState = GameState.NORMAL;
-								this.gui.resetButtons();
+								if(this.gui.buildS && this.towerManager.addTower(this.level, hoverTile, "ST")){
+									this.currentState = GameState.NORMAL;
+									this.gui.resetButtons();
+								}
+								else if(this.gui.buildR && this.towerManager.addTower(this.level, hoverTile, "RT")){
+									this.currentState = GameState.NORMAL;
+									this.gui.resetButtons();
+								}
+								else if(this.gui.buildM && this.towerManager.addTower(this.level, hoverTile, "MGT")){
+									this.currentState = GameState.NORMAL;
+									this.gui.resetButtons();
+								}
 							}
-							else if (!((BuildableTile)hoverTile).isBuildable())
-								this.towerManager.removeTower(hoverTile);
+						}
 					}
-				}	
+				}
 			case NORMAL:
 				this.camera.update(gc, sbg, this, delta);
 				this.level.update(gc, sbg, delta);		
@@ -121,6 +129,7 @@ public class GameplayState extends BasicGameState implements MouseListener {
 				}
 				break;
 			case PAUSED:
+				this.gui.update(gc, sbg, delta);
 				break;
 			case WIN:
 				this.gameOverUI.setWin(true);
@@ -129,10 +138,11 @@ public class GameplayState extends BasicGameState implements MouseListener {
 				this.gameOverUI.setWin(false);
 				break;
 		}
-		//System.out.println(this.camera.getWorldPosition());
 		if (PlayerData.health <= 0) {
 			this.currentState = GameState.LOSE;
 		}
+		else if (this.waveManager.isFinished() && this.enemyManager.isFinished())
+			this.currentState = GameState.WIN;
 		
 	}
 
@@ -153,8 +163,13 @@ public class GameplayState extends BasicGameState implements MouseListener {
 		return this.towerManager;
 	}
 	
+	public void keyPressed(int key, char c){
+		this.gui.keyPressed(key, c);
+	}	
+	
 	public void mouseClicked(int button, int x, int y, int clickCount) {
 		switch (this.currentState) {
+		case PAUSED:
 		case PLACE:
 		case NORMAL:
 			this.gui.mouseClicked(button, x, y, clickCount);

@@ -22,6 +22,8 @@ public class Bullet implements GameObject {
 	public float speed;
 	public int health, life;
 	protected Vector2f movement;
+	protected Tile targetTile;
+	private int damage;
 	
 	public Bullet() {
 		this.ID = 0;
@@ -30,18 +32,20 @@ public class Bullet implements GameObject {
 		this.width = 4;
 		this.height = 4;
 		this.radius = 2;
-		this.speed = 40;
+		this.speed = 100;
 		this.health = 0;
 		this.life = 0;
 		this.target = null;
 		this.collidable = null;
+		this.targetTile = null;
+		this.damage = 0;
 	}
 	
 	/**
 	 * This constructor is just for testing, when you allocate an enemy from the pool
 	 * use the setProperties method to set the enemy before adding it to the field
 	 */
-	public Bullet(long id, Vector2f worldPosition, Vector2f tilePosition, int width, int height, int radius, Vector2f target) {
+	public Bullet(long id, Vector2f worldPosition, Vector2f tilePosition, int width, int height, int radius, Vector2f target, Tile targetTile, int damage) {
 		this.ID = id;
 		this.worldPosition = worldPosition;
 		this.centerPosition = new Vector2f(0,0);
@@ -54,9 +58,11 @@ public class Bullet implements GameObject {
 		this.calcCenterPosition();
 		this.collidable = new Collidable(this, CollisionShape.RECTANGLE, new Vector2f(centerPosition.x - 2, centerPosition.y - 2), 4, 4, 2);
 		this.target = new Collidable(this, CollisionShape.RECTANGLE, new Vector2f(target.x - 2, target.y - 2), 4, 4, 2);
+		this.targetTile = targetTile;
+		this.damage = damage;
 	}
 	
-	public void init(long id, Vector2f worldPosition, Vector2f target) {
+	public void init(long id, Vector2f worldPosition, Vector2f target, Tile targetTile, int damage) {
 		this.ID = id;
 		this.worldPosition = worldPosition;
 		this.centerPosition = new Vector2f(0,0);
@@ -65,6 +71,8 @@ public class Bullet implements GameObject {
 		this.calcCenterPosition();
 		this.collidable = new Collidable(this, CollisionShape.RECTANGLE, new Vector2f(this.centerPosition.x - 2, this.centerPosition.y - 2), 4, 4, 2);
 		this.target = new Collidable(this, CollisionShape.RECTANGLE, new Vector2f(target.x - 2, target.y - 2), 4, 4, 2);
+		this.targetTile = targetTile;
+		this.damage = damage;
 	}
 	
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {
@@ -76,8 +84,10 @@ public class Bullet implements GameObject {
 		this.worldPosition = this.worldPosition.add(this.movement);
 		this.calcCenterPosition();
 		this.collidable.update(movement);
-		if (this.life <= 0 || Collision.collide(this, this.target))
+		if (this.life <= 0 || Collision.collide(this, this.target)) {
 			this.health = 0;
+			this.targetTile.addEffect(new TileEffect(TileEffect.EffectType.DAMAGE, this.damage, 200, this.targetTile));
+		}
 	}
 
 	public void render(GameContainer gc, Graphics g, Vector2f offset) {

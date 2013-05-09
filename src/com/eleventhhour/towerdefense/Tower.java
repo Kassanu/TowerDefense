@@ -56,6 +56,7 @@ public abstract class Tower {
 	public int firerate = 0;
 	public int cooldown = 0;
 	public int towerLevel = 0;
+	public int towerType = 0;
 	protected int animationFrame; //current frame being animated
 	protected int aniType; //The type of animation up,left,down,right
 	protected boolean attacking = false; //whether or not they are attacking, adds 4 to aniType to get attacking animation for that rotation
@@ -182,7 +183,15 @@ public abstract class Tower {
 	 * 
 	 */
 	public void upgradeTower() {
-		this.towerLevel = 1;
+		if (this.towerLevel != 1 && (PlayerData.money >= Tower.DEFAULTVALUES[this.towerType][1][3])) {
+			this.towerLevel = 1;
+			this.range = Tower.DEFAULTVALUES[this.towerType][this.towerLevel][0];
+			this.damage = Tower.DEFAULTVALUES[this.towerType][this.towerLevel][1];
+			this.firerate = Tower.DEFAULTVALUES[this.towerType][this.towerLevel][2];
+			this.cost = Tower.DEFAULTVALUES[this.towerType][this.towerLevel][3];
+			this.spriteGroup = Tower.DEFAULTVALUES[this.towerType][this.towerLevel][4];
+			this.aniTotalDuration = Tower.DEFAULTVALUES[this.towerType][this.towerLevel][5];
+		}
 	}
 	
 }

@@ -76,19 +76,28 @@ public class TowerManager {
 		Tower.setDefaults(prefList);
 	}
 	
-	public void addTower(Level level, Tile tile,int type) {
+	public boolean addTower(Level level, Tile tile, String type) {
 		Tower t;
-		if (type == 0)
-			t = new MGtower(LASTID, tile, level);
-		else if (type == 1)
-			t = new Rtower(LASTID, tile, level);
-		else
+		if(type.equals("ST")){
 			t = new SlowTower(LASTID, tile, level);
+		}
+		else if(type.equals("RT")){
+			t = new Rtower(LASTID, tile, level);
+		}
+		else{
+			t = new MGtower(LASTID, tile, level);
+		}
 		
-		towers.put(LASTID, t);
-		((BuildableTile)tile).addTower(t);
-		LASTID++;
-		PlayerData.decreaseMoney(t.cost);
+		if(PlayerData.money >= t.cost){
+			PlayerData.decreaseMoney(t.cost);
+			towers.put(LASTID, t);
+			((BuildableTile)tile).addTower(t);
+			LASTID++;
+			return true;
+		}
+		else{
+			return false;
+		}
 	}
 	
 	public void removeTower(Tile tile) {
@@ -126,9 +135,9 @@ public class TowerManager {
 		}
 	}
 
-	public void spawnBullet(Vector2f worldPosition, Vector2f target) {
+	public void spawnBullet(Vector2f worldPosition, Vector2f target, Tile tile, int damage) {
 		Bullet bullet = this.bulletPool.allocate();
-		bullet.init(LASTBULLETID, worldPosition, target);
+		bullet.init(LASTBULLETID, worldPosition, target, tile, damage);
 		this.addBullet(bullet);
 	}
 

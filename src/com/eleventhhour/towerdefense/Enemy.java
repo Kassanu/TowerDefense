@@ -137,6 +137,25 @@ public class Enemy implements GameObject {
 		}
 		this.movement = this.waypoint.getCollidable().getCenterPosition().copy();
 		this.movement = this.movement.sub(this.centerPosition);	
+		// check the movement  of the enemy to determine which way they are facing
+		// checking if the aniType matches should ensure that the if will fail quickly and prevent the duration from reseting every tick
+		//why are floats so painful?
+		if (this.aniType != 2 && this.movement.x > 0.0) {
+			this.aniType = 2;
+			this.aniCurrentDuration = 0;
+		}
+		else if (this.aniType != 3 && this.movement.x < 0.0) {
+			this.aniType = 3;
+			this.aniCurrentDuration = 0;
+		}
+		else if (this.aniType != 1 && this.movement.y > 0.0) {
+			this.aniType = 1;
+			this.aniCurrentDuration = 0;
+		}
+		else if (this.aniType != 0 && this.movement.y < 0.0) {
+			this.aniType = 0;
+			this.aniCurrentDuration = 0;
+		}
 		this.movement = this.movement.normalise();
 		this.movement = this.movement.scale(this.currentSpeed / delta);
 		this.worldPosition = this.worldPosition.add(this.movement);
@@ -161,25 +180,7 @@ public class Enemy implements GameObject {
 		
 		//sprite stuff
 		this.aniCurrentDuration += delta;
-		// check the movement  of the enemy to determine which way they are facing
-		// checking if the aniType matches should ensure that the if will fail quickly and prevent the duration from reseting every tick
-		//why are floats so painful?
-		if (this.aniType != 2 && this.movement.x > 0.0) {
-			this.aniType = 2;
-			this.aniCurrentDuration = 0;
-		}
-		else if (this.aniType != 3 && this.movement.x < 0.0) {
-			this.aniType = 3;
-			this.aniCurrentDuration = 0;
-		}
-		else if (this.aniType != 1 && this.movement.y > 0.0) {
-			this.aniType = 1;
-			this.aniCurrentDuration = 0;
-		}
-		else if (this.aniType != 0 && this.movement.y < 0.0) {
-			this.aniType = 0;
-			this.aniCurrentDuration = 0;
-		}	
+			
 		
 		if (this.aniCurrentDuration >= this.aniTotalDuration) {
 			this.animationFrame = ((this.animationFrame+1) % 4);

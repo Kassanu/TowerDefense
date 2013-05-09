@@ -19,6 +19,7 @@ public class Rtower extends Tower {
 		this.animationFrame = 0;
 		this.aniType = 0;
 		this.aniCurrentDuration = 0;
+		this.towerType = 1;
 		this.setAttackable(this.level.getAttackableTiles(this.position.getPosition(), this.range));
 	}
 	
@@ -28,10 +29,9 @@ public class Rtower extends Tower {
 			Enemy enemy = this.selectEnemyToAttack();
 			if (enemy != null) {
 				this.attacking = true;
-				gs.getTowerManager().spawnBullet(this.centerPosition.copy(), enemy.getCenterPosition());
 				this.attack(enemy);
 				Tile tile = this.attackable[this.attackingTileNum];
-				tile.addEffect(new TileEffect(TileEffect.EffectType.DAMAGE, 200, 1000, tile));
+				gs.getTowerManager().spawnBullet(this.centerPosition.copy(), enemy.getCenterPosition(), tile, (this.damage / 4));
 				this.cooldown = this.firerate;
 			}
 		}

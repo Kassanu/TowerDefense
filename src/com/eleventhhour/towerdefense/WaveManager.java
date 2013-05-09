@@ -19,6 +19,7 @@ public class WaveManager {
 	public static final int TIMEBETWEENWAVES = 10 * 1000; //multiply by 1000 for milliseconds
 	public int nextWaveIn = WaveManager.TIMEBETWEENWAVES;
 	public int healthStart = 0; //players starting health on this wave
+	private boolean wavesFinished = false;
 	
 	public WaveManager(int level) {
 		this.loadWaves(level);
@@ -84,10 +85,16 @@ public class WaveManager {
 				}
 			}
 		}
+		else {
+			this.wavesFinished  = true;
+		}
 	}
 
 	public String toString() {
 		return "WaveManager [waves=" + Arrays.toString(waves) + "]";
+	}
+	public boolean isFinished() {
+		return this.wavesFinished;
 	}
 	
 	
