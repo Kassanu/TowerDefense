@@ -27,11 +27,11 @@ public class MGtower extends Tower {
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta){
 		if (this.cooldown <= 0) {
 			
-			Enemy enemy = this.selectEnemyToAttack();
-			if (enemy != null) {
+			this.attackingTarget = this.selectEnemyToAttack();
+			if (this.attackingTarget != null) {
 				this.attacking = true;
 				//gs.getTowerManager().spawnBullet(this.centerPosition.copy(), enemy.getCenterPosition());
-				this.attack(enemy);
+				this.attack(this.attackingTarget);
 				this.cooldown = this.firerate;
 			}
 		}
