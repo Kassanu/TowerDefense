@@ -26,12 +26,12 @@ public class Rtower extends Tower {
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta){
 		if (this.cooldown <= 0) {
-			Enemy enemy = this.selectEnemyToAttack();
-			if (enemy != null) {
+			this.attackingTarget = this.selectEnemyToAttack();
+			if (this.attackingTarget != null) {
 				this.attacking = true;
-				this.attack(enemy);
+				this.attack(this.attackingTarget);
 				Tile tile = this.attackable[this.attackingTileNum];
-				gs.getTowerManager().spawnBullet(this.centerPosition.copy(), enemy.getCenterPosition(), tile, (this.damage / 4));
+				gs.getTowerManager().spawnBullet(this.centerPosition.copy(), this.attackingTarget.getCenterPosition(), tile, (this.damage / 4));
 				this.cooldown = this.firerate;
 			}
 		}

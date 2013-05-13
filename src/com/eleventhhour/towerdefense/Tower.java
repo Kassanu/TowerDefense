@@ -63,6 +63,7 @@ public abstract class Tower {
 	protected int aniTotalDuration; //Total duration of animationFrame
 	protected int aniCurrentDuration; //current duration of this animationFrame
 	protected int spriteGroup; //group on the sprite sheet this enemy gets it's sprite from
+	protected Enemy attackingTarget = null;
 	
 	public Tower(long lASTID, Tile pos, Level level){
 		this.ID = lASTID;
@@ -134,11 +135,18 @@ public abstract class Tower {
 		g.drawImage(Tower.spriteSheet,x ,y,x + TowerDefense.TILESIZE, y + TowerDefense.TILESIZE,  srcx, srcy, srcx + TowerDefense.TILESIZE, srcy + TowerDefense.TILESIZE);
 		
 		//render attackable tiles
-		Vector2f attackablePos = null;
-		for (Tile attackableTile : this.attackable) {
-			attackablePos = this.level.getTileWorldPosition(attackableTile); 
-			g.drawRect((attackablePos.x + offset.x) * TowerDefense.SCALE, (attackablePos.y + offset.y) * TowerDefense.SCALE, (TowerDefense.TILESIZE * TowerDefense.SCALE), (TowerDefense.TILESIZE * TowerDefense.SCALE));
+		if (GameplayState.getCurrentState() == GameplayState.GameState.PLACE) {
+			Vector2f attackablePos = null;
+			for (Tile attackableTile : this.attackable) {
+				attackablePos = this.level.getTileWorldPosition(attackableTile); 
+				g.drawRect((attackablePos.x + offset.x) * TowerDefense.SCALE, (attackablePos.y + offset.y) * TowerDefense.SCALE, (TowerDefense.TILESIZE * TowerDefense.SCALE), (TowerDefense.TILESIZE * TowerDefense.SCALE));
+			}
 		}
+		if (this.attackingTarget != null) {
+			Vector2f dist = (this.attackingTarget.getCenterPosition().copy()).sub(this.centerPosition);
+			g.drawLine(this.centerPosition.x,this.centerPosition.y , this.centerPosition.x+dist.x, this.centerPosition.y+dist.y);
+		}
+		
 	}
 	
 	public long getId() {
@@ -149,13 +157,41 @@ public abstract class Tower {
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {
 		//sprite stuff
 		this.aniCurrentDuration += delta;
-		
-		//possible code to check direction it should face
-		
+				
 		if (this.aniCurrentDuration >= this.aniTotalDuration) {
 			this.animationFrame = ((this.animationFrame+1) % 4);
 			this.aniCurrentDuration = 0;
 		}
+		
+		if (this.attackingTarget != null) {
+			Vector2f dist = (this.attackingTarget.getCenterPosition().copy()).sub(this.centerPosition);
+			double radAngle = Math.atan2(dist.x, dist.y);
+			double degAngle = radAngle * (180/Math.PI);
+			
+			if (degAngle >= 0) {
+				//pos looking right
+				if ((degAngle > 90)) {
+					//looking up
+					this.aniType = 3;
+				}
+				else {
+					//looking down
+					this.aniType = 0;
+				}
+			}
+			else {
+				//nega looking left
+				if ((degAngle < -90)) {
+					//looking up
+					this.aniType = 2;
+				}
+				else {
+					//looking down
+					this.aniType = 1;
+				}
+			}
+		}
+		
 	}
 	
 	/**
