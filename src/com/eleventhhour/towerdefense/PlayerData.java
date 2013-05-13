@@ -2,6 +2,7 @@ package com.eleventhhour.towerdefense;
 
 public class PlayerData {
 
+	// the player's current data values
 	public static int health = 0, score = 0, money = 0, level = 0, multiplier = 0;
 	private static PlayerData instance = null;
 

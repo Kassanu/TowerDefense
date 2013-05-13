@@ -19,12 +19,12 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class TowerManager {
 	
-	public static long LASTID = 1;
-	public static long LASTBULLETID = 1;
-	public HashMap<Long, Tower> towers;
-	public HashMap<Long, Bullet> bullets;
-	public ArrayList<Long> toBeRemoved;
-	private BulletPool bulletPool;
+	public static long LASTID = 1; // id of the last tower added
+	public static long LASTBULLETID = 1; // id of the last bullet added
+	public HashMap<Long, Tower> towers; // towers on the map
+	public HashMap<Long, Bullet> bullets; // bullets on the map
+	public ArrayList<Long> toBeRemoved; // ids of the bullets that need to be removed from the map 
+	private BulletPool bulletPool; // pool of bullets ready to be used by the manager
 	
 	public TowerManager() {
 		this.loadTowerPref();
@@ -76,6 +76,13 @@ public class TowerManager {
 		Tower.setDefaults(prefList);
 	}
 	
+	/*
+	 * addTower -
+	 * 
+	 * - adds a tower to the tower manager, depending on the type that the player is trying to build
+	 * - only adds the tower if the player has enough money to do so, and then decrements the player's money by the tower's cost
+	 * - returns true if the tower was built, false otherwise
+	 */
 	public boolean addTower(Level level, Tile tile, String type) {
 		Tower t;
 		if(type.equals("ST")){
@@ -100,12 +107,14 @@ public class TowerManager {
 		}
 	}
 	
+	// removes a tower from the tower hashmap
 	public void removeTower(Tile tile) {
 		long removeId = ((BuildableTile) tile).getTower().getId();
 		towers.remove(removeId);
 		((BuildableTile) tile).removeTower();
 	}
 	
+	// renders all the towers and bullets on the map
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g, Vector2f offset) throws SlickException {
 		for (Entry<Long, Tower> entry : this.towers.entrySet()) {
 			entry.getValue().render(gc, g, offset);
@@ -116,6 +125,7 @@ public class TowerManager {
 		}
 	}
 
+	// updates all the towers and bullets on the map
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) throws SlickException {
 		for (Entry<Long, Tower> entry : this.towers.entrySet()) {
 			entry.getValue().update(gc, sbg, gs, delta);
@@ -135,17 +145,20 @@ public class TowerManager {
 		}
 	}
 
+	// creates a bullet and adds it to the map
 	public void spawnBullet(Vector2f worldPosition, Vector2f target, Tile tile, int damage) {
 		Bullet bullet = this.bulletPool.allocate();
 		bullet.init(LASTBULLETID, worldPosition, target, tile, damage);
 		this.addBullet(bullet);
 	}
 
+	// adds a bullet to the bullet hash map and the map
 	public void addBullet(Bullet bulllet) {
 		this.bullets.put(LASTBULLETID, bulllet);
 		LASTBULLETID++;
 	}
 	
+	// removes a bullet fromt the map and the bullet hash map
 	private void removeBullet(Long bulletId) {
 		Bullet bulllet = this.bullets.get(bulletId);
 		this.bulletPool.release(bulllet);

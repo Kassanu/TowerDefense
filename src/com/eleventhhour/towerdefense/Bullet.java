@@ -10,20 +10,21 @@ import com.eleventhhour.towerdefense.Collision.CollisionShape;
 
 public class Bullet implements GameObject {
 
-	private long ID;
-	protected Collidable target;
-	protected Collidable collidable;
-	protected Vector2f worldPosition;
-	protected Vector2f centerPosition;
-	protected Vector2f tilePosition;
-	protected int width;
+	private long ID; // id of the bullet
+	protected Collidable target; // used for collision detection
+	protected Collidable collidable; // used for collision detection
+	protected Vector2f worldPosition; // absolute position of the bullet on the map
+	protected Vector2f centerPosition; // absolute center position of the bullet on the map
+	protected Vector2f tilePosition; // position of the tile that the bullet is on
+	// dimensions of the bullet
+	protected int width; 
 	protected int height;
 	protected int radius;
-	public float speed;
+	public float speed; // speed at which the bullet moves
 	public int health, life;
 	protected Vector2f movement;
-	protected Tile targetTile;
-	private int damage;
+	protected Tile targetTile; // tile that the bullet is targeting
+	private int damage; // amount of damage done by the bullet
 	
 	public Bullet() {
 		this.ID = 0;

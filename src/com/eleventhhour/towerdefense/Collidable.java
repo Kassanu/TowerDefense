@@ -11,14 +11,15 @@ import com.eleventhhour.towerdefense.Collision.CollisionShape;
 
 public class Collidable implements GameObject {
 	
-	private long ID;
-	protected CollisionShape collisionShape;
-	protected GameObject parentGameObject;
-	protected Vector2f worldPosition;
+	private long ID; // id of the collidable
+	protected CollisionShape collisionShape; // shape used for collision detection
+	protected GameObject parentGameObject; // game object that uses this collidable
+	protected Vector2f worldPosition; // absolute position on the map
 	protected Vector2f tilePosition = null; //not needed for this class
-	protected Vector2f centerPosition;
-	protected int width,height,radius;
+	protected Vector2f centerPosition; // center position of this collidable
+	protected int width,height,radius; // dimension of the collidable
 	
+	// initializes the variables in this class
 	public Collidable(GameObject parent, CollisionShape shape, Vector2f position, int width, int height, int radius) {
 		this.parentGameObject = parent;
 		this.collisionShape = shape;

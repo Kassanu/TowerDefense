@@ -8,6 +8,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import com.eleventhhour.towerdefense.Level.TileType;
 
+// tile that is not on the edge of the map and not part of the path
 public class BuildableTile extends Tile {
 	
 	Tower tower = null;

@@ -20,10 +20,10 @@ public class EnemyManager {
 	
 	public static long LASTID = 1;
 	
-	private EnemyPool enemyPool;
-	public Level level;
-	public HashMap<Long, Enemy> enemies;
-	public ArrayList<Long> toBeRemoved;
+	private EnemyPool enemyPool; // enemy pool used by the enemy manager
+	public Level level; // level that the player is playing
+	public HashMap<Long, Enemy> enemies; // enemies currently on the map
+	public ArrayList<Long> toBeRemoved; // enemies to be removed from the map
 	
 	public EnemyManager(Level level) {
 		this.level = level;

@@ -14,20 +14,22 @@ import com.eleventhhour.towerdefense.Level.TileType;
 
 public abstract class Tile implements GameObject {
 	
-	private long ID;
-	private Image tileImage;
-	protected Collidable collidable;
+	private long ID; // id of the tile
+	private Image tileImage; // image of the tile
+	protected Collidable collidable; // for collision detection
 	protected Vector2f tilePosition; //position in the tiles array in the level class (NOT ACTUAL XY COORDINATES)
-	protected Vector2f worldPosition;
-	protected Vector2f centerPosition;
-	protected TileType tileType;
-	protected ArrayList<Enemy> enemiesOnTile;
-	protected ArrayList<TileEffect> tileEffects;
-	public ArrayList<Integer> tileEffectsToBeRemoved;
+	protected Vector2f worldPosition; // absolute position of the tile on the map
+	protected Vector2f centerPosition; // center position of the tile
+	protected TileType tileType; // the tile type of this tile
+	protected ArrayList<Enemy> enemiesOnTile; // arraylist of the enemies that are currently on this tile
+	protected ArrayList<TileEffect> tileEffects; // arraylist of the effects active on this tile
+	public ArrayList<Integer> tileEffectsToBeRemoved; // effects to be removed from the tile
+	// dimensions of the tile
 	protected int width;
 	protected int height;
 	protected int radius;
 	
+	// initializes the variables in this class
 	public Tile(long id, Image tileImage, Vector2f tilePosition, Vector2f worldPosition, TileType tileType) {
 		this.ID = id;
 		this.tileImage = tileImage;
@@ -45,6 +47,7 @@ public abstract class Tile implements GameObject {
 		this.calcCenterPosition();
 	}
 	
+	// updates the components in this class
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {
 		//this.collidable.update(gc, sbg, gs, delta);
 		int i = 0;
@@ -64,6 +67,7 @@ public abstract class Tile implements GameObject {
 		this.enemiesOnTile.clear();
 	}
 	
+	// renders the components of the tile
 	public void render(GameContainer gc, Graphics g, Vector2f offset) {
 		//((i * TowerDefense.TILESIZE) - offset.x) * TowerDefense.SCALE, ((j * TowerDefense.TILESIZE) - offset.y) * TowerDefense.SCALE
 		this.tileImage.draw((this.worldPosition.x + offset.x) * TowerDefense.SCALE,(this.worldPosition.y + offset.y) * TowerDefense.SCALE,TowerDefense.SCALE);

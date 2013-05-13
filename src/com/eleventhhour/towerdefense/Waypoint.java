@@ -12,15 +12,17 @@ import com.eleventhhour.towerdefense.Collision.CollisionShape;
 
 public class Waypoint implements GameObject {
 	
-	private long ID;
-	protected Collidable collidable;
-	protected Vector2f worldPosition;
-	protected Vector2f centerPosition;
-	protected Vector2f tilePosition;
+	private long ID; // id of the waypoint
+	protected Collidable collidable; // used for collision detection
+	protected Vector2f worldPosition; // absolute position of the waypoint
+	protected Vector2f centerPosition; // center position of the waypoint
+	protected Vector2f tilePosition; // the position of the tile that this waypoint inhabits
+	// dimensions of this waypoint
 	protected int width;
 	protected int height;
 	protected int radius;
 	
+	// initializes the variables of this waypoint
 	public Waypoint(long id, Vector2f worldPosition, Vector2f tilePosition, int width, int height, int radius) {
 		this.ID = id;
 		this.worldPosition = worldPosition;

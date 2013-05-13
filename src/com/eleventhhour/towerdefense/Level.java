@@ -20,14 +20,14 @@ import com.eleventhhour.towerdefense.Collision.CollisionShape;
 
 public class Level {
 	
-	public Tile[][] tiles;
-	public Vector2f startpoint = null, endpoint = null, screenPosition = null;
-	public int width, height;
-	public Vector2f hoverTile = new Vector2f(-1,-1);
-	public Waypoint[] waypoints = null;
-	public Vector2f[] path = null;
-	public GameplayState gs;
-	public enum TileType {BUILDABLE, PATH, BOUNDRY};
+	public Tile[][] tiles;// 2-d array of tiles on the map
+	public Vector2f startpoint = null, endpoint = null, screenPosition = null; // positions of the screen and start and end point of the map
+	public int width, height; // dimensions of the map
+	public Vector2f hoverTile = new Vector2f(-1,-1); // position of the current hover tile
+	public Waypoint[] waypoints = null; // array of the waypoints for the enemies to move towards
+	public Vector2f[] path = null; // array of positions of the tiles in the enemy path
+	public GameplayState gs; // reference to the game state that uses this class
+	public enum TileType {BUILDABLE, PATH, BOUNDRY}; // different types of tiles
 	
 	public Level(GameplayState gs, int width, int height, Vector2f screenPosition) {
 		this.gs = gs;
@@ -36,8 +36,10 @@ public class Level {
 		this.screenPosition = screenPosition;
 	}
 	
+	// loads the map data
 	public void loadMap(String path) throws Exception {
 		File level = new File(path);
+		// if the given file path is not a level
 		if (!level.exists()) {
 			throw new FileNotFoundException("Map not found!");
 		}
@@ -45,11 +47,12 @@ public class Level {
 		TiledMap tiledmap = null;
 		
 		try {
-			tiledmap = new TiledMap(path);
+			tiledmap = new TiledMap(path); // create new tiled map from the path
 		} catch (SlickException e) {
 			e.printStackTrace();
 		}
 		
+		// get the dimensions of the tiled map to create the 2-d array of the tiles in the map
 		int mapWidth = tiledmap.getWidth();
 		int mapHeight = tiledmap.getHeight();
 		
@@ -57,9 +60,11 @@ public class Level {
 		long tileId = 0;
 		for (int i = 0; i < mapWidth; i++) {
 			for (int j = 0; j < mapHeight; j++) {
+				// read the map file and create the map
+				// each tile in the map has different variables to signify different things such as tile type
 				int tileID = tiledmap.getTileId(i, j, 0);
 				String type = tiledmap.getTileProperty(tileID, "type", "false");
-				
+				// create the map from different tile types
 				if (type.equals("buildable")) {
 					//create buildabletile
 					this.tiles[i][j] = new BuildableTile(tileId++, tiledmap.getTileImage(i, j, 0), new Vector2f(i,j), this.getTileWorldPosition(i, j), TileType.BUILDABLE);
@@ -76,7 +81,7 @@ public class Level {
 				tileID = tiledmap.getTileId(i, j, 1);
 				
 				String waypoint = tiledmap.getTileProperty(tileID, "waypoint", "false");
-				
+				// determine if its a waypoint, and if its the end or starting waypoint
 				if (waypoint.equals("true")) {
 					waypoint = tiledmap.getTileProperty(tileID, "start", "false");
 					if (waypoint.equals("true")) {
@@ -93,17 +98,20 @@ public class Level {
 			}
 		}
 		
+		// throw an exception if map does not have a start and an end point
 		if (this.startpoint == null || this.endpoint == null)
 			throw new Exception("Levels must have a start and end point");
+		// after map data is loaded properly, create the enemy path
 		findPath();
 	}
 	
 	/**
 	 * findPath
 	 * 
-	 * -will determine the path that enemies will take.  Uses modified Dijkstra algorithm to visit each tile starting from the starting point to determine the path the
-	 * enemies will take to reach the end of the map.
-	 * first start from the start point
+	 * - will determine the path that enemies will take.
+	 * - Uses modified Dijkstra algorithm to visit each tile starting from the starting point
+	 * 	 to determine the path the enemies will take to reach the end of the map.
+	 * - starts from the start point
 	 * 
 	 */
 	public void findPath() {
@@ -158,6 +166,7 @@ public class Level {
 		this.path = listPath.toArray(new Vector2f[listPath.size()]);
 	}
 	
+	// updates the tiles in the level
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) {
 		//Tile temp = this.getTileAtGridPosition(this.hoverTile);
 		//System.out.println(temp.getEnemiesOnTile().toString());
@@ -168,6 +177,7 @@ public class Level {
 		}
 	}
 
+	// renders all the tiles that are visible
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g, GameplayState gs, Vector2f offset) throws SlickException {
 		for (int i = 0; i < this.tiles.length; i++) {
 			for (int j = 0; j < this.tiles[i].length; j++) {
@@ -339,23 +349,27 @@ public class Level {
 		return new Vector2f(pos.x + (TowerDefense.TILESIZE) / 2, pos.y + (TowerDefense.TILESIZE) / 2);
 	}
 	
-	
+	// sets the hover tile given the position of a tile
 	public void setHover(Vector2f hoverTile) {
 		this.hoverTile = hoverTile;		
 	}
 	
+	// returns the position current hover tile
 	public Vector2f getHover() {
 		return this.hoverTile;
 	}
 	
+	// returns the Tile that is being hovered over
 	public Tile getHoverTile() {
 		return this.tiles[(int) this.hoverTile.x][(int) this.hoverTile.y];
 	}
 
+	// returns the waypoint requested
 	public Waypoint requestNextWaypoint(int waypointNumber) {
 		return this.waypoints[waypointNumber];		
 	}
 
+	// returns a Tile array that represents the path tiles that are within the range of a given tower's position
 	public Tile[] getAttackableTiles(Vector2f position, int range) {
 		ArrayList<Tile> attackable = new ArrayList<Tile>();
 		int from = Math.abs(range) * -1;
@@ -379,6 +393,7 @@ public class Level {
 		return attackable.toArray(new Tile[attackable.size()]);
 	}
 
+	// adds an enemy to the enemy array of the tile that it is on
 	public void addEnemyToTile(Enemy enemy) {
 		Tile temp = this.getTileAtWorldPosition(enemy.getCenterPosition());
 		if (temp != null) {

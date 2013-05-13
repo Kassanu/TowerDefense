@@ -44,19 +44,19 @@ public abstract class Tower {
 	
 	public final long ID;
 	
-	public Tile position;
-	public Vector2f worldPosition;
-	public Vector2f centerPosition;
-	public Tile[] attackable = null;
-	public int attackingTileNum = 0;
-	protected Level level = null;
-	public int cost = 0;
-	public int range = 0;
-	public int damage = 0;
-	public int firerate = 0;
-	public int cooldown = 0;
-	public int towerLevel = 0;
-	public int towerType = 0;
+	public Tile position; // tile that the tower is on
+	public Vector2f worldPosition; // absolute position of the tower on the map
+	public Vector2f centerPosition; // absolute center position of the tower on the map
+	public Tile[] attackable = null; // path tiles that the tower checks for enemies
+	public int attackingTileNum = 0; // tile that the tower should attack (used by slow and rocket towers)
+	protected Level level = null; // reference to the level that the user is playing on
+	public int cost = 0; // cost of the tower
+	public int range = 0; // range of the tower
+	public int damage = 0; // damage done by the tower
+	public int firerate = 0; // rate the tower fires at
+	public int cooldown = 0; // time since last time tower fired
+	public int towerLevel = 0; // level of the tower (used for upgrading)
+	public int towerType = 0; // enumrated tower type
 	protected int animationFrame; //current frame being animated
 	protected int aniType; //The type of animation up,left,down,right
 	protected boolean attacking = false; //whether or not they are attacking, adds 4 to aniType to get attacking animation for that rotation
@@ -123,6 +123,7 @@ public abstract class Tower {
 		target.getAttacked(this.damage);
 	}
 	
+	// renders the tower
 	public void render(GameContainer gc, Graphics g, Vector2f offset){
 		
 		float x = (this.worldPosition.x + offset.x) * TowerDefense.SCALE;
@@ -144,6 +145,7 @@ public abstract class Tower {
 		return this.ID;
 	}
 
+	// updates the tower data
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {
 		//sprite stuff
 		this.aniCurrentDuration += delta;
@@ -191,6 +193,7 @@ public abstract class Tower {
 			this.cost = Tower.DEFAULTVALUES[this.towerType][this.towerLevel][3];
 			this.spriteGroup = Tower.DEFAULTVALUES[this.towerType][this.towerLevel][4];
 			this.aniTotalDuration = Tower.DEFAULTVALUES[this.towerType][this.towerLevel][5];
+			PlayerData.decreaseMoney(Tower.DEFAULTVALUES[this.towerType][1][3]);
 		}
 	}
 	

@@ -14,10 +14,10 @@ public class gameOverGUI {
 
 	public int width,height; // dimensions of GUI
 	public int GUIx, GUIy; //top-left corner of GUI
-	private Rectangle winImageR, loseImageR, scoreImageR, menuButtonR;
-	private Image background, winImage, loseImage, scoreImage, menuButton;
-	private StateBasedGame sbg;
-	private boolean win = false;
+	private Rectangle winImageR, loseImageR, scoreImageR, menuButtonR; // rectangles for button click detection
+	private Image background, winImage, loseImage, scoreImage, menuButton; // images used by this gui
+	private StateBasedGame sbg; // state based game that uses this gui
+	private boolean win = false; // win/lose game
 	
 	public gameOverGUI(StateBasedGame sbg) {
 		this.sbg = sbg;

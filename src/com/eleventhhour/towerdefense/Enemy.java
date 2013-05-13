@@ -44,22 +44,23 @@ public class Enemy implements GameObject {
 
 	private static Image spriteSheet = null;
 	
-	private long ID;
-	protected Collidable collidable;
-	protected Vector2f worldPosition;
-	protected Vector2f centerPosition;
-	protected Vector2f tilePosition;
+	private long ID; // id of the enemy
+	protected Collidable collidable; // used for collision detection
+	protected Vector2f worldPosition; // absolute position of the enemy on the map
+	protected Vector2f centerPosition; // center position of the enemy on the map
+	protected Vector2f tilePosition; // position of the tile that the enemy is on
+	// dimensions of the enemy
 	protected int width;
 	protected int height;
 	protected int radius;
-	protected int health;
-	protected float maxSpeed;
-	protected float currentSpeed;
-	protected int scoreReward;
-	protected int moneyReward;
-	Vector2f movement;
-	Waypoint waypoint;
-	int waypointNumber = 0;
+	protected int health; // the health of the enemy
+	protected float maxSpeed; // the normal speed of the enemy
+	protected float currentSpeed; // the current speed of the enemy (less than max speed if enemy is being slowed
+	protected int scoreReward; // the score reward the player recieves for killing the enemy
+	protected int moneyReward; // money amount the player recieves for killing the enemy
+	Vector2f movement; // distance the enemy has moved since the last update
+	Waypoint waypoint; // waypoint the enemy is moving towards
+	int waypointNumber = 0; // number of the waypoint in the waypoint array
 	protected int animationFrame; //current frame being animated
 	protected int aniType; //The type of animation up,left,down,right
 	protected int aniTotalDuration; //Total duration of animationFrame

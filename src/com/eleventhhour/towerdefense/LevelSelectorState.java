@@ -16,18 +16,19 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class LevelSelectorState extends BasicGameState implements MouseListener {
 	
-	private int stateId;
-	private Image arrow, play;
-	private Image[] levelImages;
+	private int stateId; // id number of this state
+	private Image arrow, play; // images used by this state
+	private Image[] levelImages; // thumbnails of the levels
+	// colors used by this state
 	private Color bgcolor = Color.black;
-	private Color buttoncolor = Color.green;
 	private Color textcolor = Color.white;
-	private Rectangle nextButton, prevButton, playButton, levelRect;
-	private String levelSelectTitle = new String("Level Selection");
-	public String levelName;
+	// rectangles used as buttons in this state
+	private Rectangle nextButton, prevButton, playButton, levelRect; // levelRect - area to show level image in
+	private String levelSelectTitle = new String("Level Selection"); // title of this state
+	public String levelName; // name of the level being shown
 	public int centerX, centerY, currentLevel = 0;
-	private StateBasedGame sbg;
-	private File[] levels;
+	private StateBasedGame sbg; // statebasedgame that uses this state
+	private File[] levels; // level files
 	
 	public LevelSelectorState(int id){
 		super();
