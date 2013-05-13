@@ -13,6 +13,7 @@ import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import com.eleventhhour.towerdefense.GameplayState.GameState;
 import com.eleventhhour.towerdefense.Level.TileType;
 
 public class GameplayState extends BasicGameState implements MouseListener, KeyListener {
@@ -24,7 +25,7 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 	private EnemyManager enemyManager;
 	private Camera camera;
 	public static enum GameState {NORMAL, PAUSED, WIN, LOSE, PLACE};
-	public GameState currentState = GameState.NORMAL;
+	public static GameState currentState = GameState.NORMAL;
 	public GameGUI gui;
 	public gameOverGUI gameOverUI;
 	/*
@@ -48,7 +49,7 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 	
 	@Override
 	public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		this.currentState = GameState.NORMAL;
+		GameplayState.currentState = GameState.NORMAL;
 		try {
 			this.camera = new Camera(0,new Vector2f(0,00), new Vector2f(0,0), 20 * TowerDefense.TILESIZE, 16 * TowerDefense.TILESIZE, 0, this);
 			this.setLevel(new Level(this, gc.getWidth(), gc.getHeight(), new Vector2f(0,00)));
@@ -70,7 +71,7 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 		this.towerManager.render(gc, sbg, g, offset);
 		this.enemyManager.render(gc, sbg, g, offset);
 		this.gui.render(gc, sbg, g);
-		switch (this.currentState) {
+		switch (GameplayState.currentState) {
 			case WIN:
 			case LOSE:
 				this.gameOverUI.render(gc, sbg, g);
@@ -86,7 +87,7 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 		int my = i.getMouseY();
 		this.getLevel().setHover(this.getLevel().getTileGridPosition(mx,my));
 		
-		switch (this.currentState) {
+		switch (GameplayState.currentState) {
 			case PLACE:
 				if (i.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
 					if(my <= 512){
@@ -94,15 +95,15 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 						if (hoverTile.getTileType() == TileType.BUILDABLE){
 							if (((BuildableTile)hoverTile).isBuildable()){
 								if(this.gui.buildS && this.towerManager.addTower(this.level, hoverTile, "ST")){
-									this.currentState = GameState.NORMAL;
+									GameplayState.currentState = GameState.NORMAL;
 									this.gui.resetButtons();
 								}
 								else if(this.gui.buildR && this.towerManager.addTower(this.level, hoverTile, "RT")){
-									this.currentState = GameState.NORMAL;
+									GameplayState.currentState = GameState.NORMAL;
 									this.gui.resetButtons();
 								}
 								else if(this.gui.buildM && this.towerManager.addTower(this.level, hoverTile, "MGT")){
-									this.currentState = GameState.NORMAL;
+									GameplayState.currentState = GameState.NORMAL;
 									this.gui.resetButtons();
 								}
 							}
@@ -139,13 +140,13 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 				break;
 		}
 		if (PlayerData.health <= 0) {
-			this.currentState = GameState.LOSE;
+			GameplayState.currentState = GameState.LOSE;
 		}
 		else if (this.waveManager.isFinished() && this.enemyManager.isFinished())
-			this.currentState = GameState.WIN;
+			GameplayState.currentState = GameState.WIN;
 		
 	}
-
+	
 	@Override
 	public int getID() {
 		return this.stateId;
@@ -168,7 +169,7 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 	}	
 	
 	public void mouseClicked(int button, int x, int y, int clickCount) {
-		switch (this.currentState) {
+		switch (GameplayState.currentState) {
 		case PAUSED:
 		case PLACE:
 		case NORMAL:
@@ -197,6 +198,10 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 
 	public Camera getCamera() {
 		return this.camera;
+	}
+
+	public static GameState getCurrentState() {
+		return GameplayState.currentState;
 	}
 	
 }
