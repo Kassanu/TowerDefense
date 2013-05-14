@@ -13,6 +13,7 @@ import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import com.eleventhhour.towerdefense.GameplayState.GameState;
 import com.eleventhhour.towerdefense.Level.TileType;
 
 public class GameplayState extends BasicGameState implements MouseListener, KeyListener {
@@ -24,7 +25,7 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 	private EnemyManager enemyManager; // manages enemy updating, rendering, and manipulation
 	private Camera camera; // controls what parts of the game are shown on the game screen
 	public static enum GameState {NORMAL, PAUSED, WIN, LOSE, PLACE}; // different states within this game state
-	public GameState currentState = GameState.NORMAL; // the current state of this game state
+	public static GameState currentState = GameState.NORMAL; // the current state of this game state
 	public GameGUI gui; // the GUI of this game state
 	public gameOverGUI gameOverUI; // the GUI used when the game ends (win / lose)
 	/*
@@ -49,7 +50,7 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 	@Override
 	// initializes the variables of this game state when the game enters this state
 	public void enter(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		this.currentState = GameState.NORMAL;
+		GameplayState.currentState = GameState.NORMAL;
 		try {
 			this.camera = new Camera(0,new Vector2f(0,00), new Vector2f(0,0), 20 * TowerDefense.TILESIZE, 16 * TowerDefense.TILESIZE, 0, this);
 			this.setLevel(new Level(this, gc.getWidth(), gc.getHeight(), new Vector2f(0,00)));
@@ -72,7 +73,7 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 		this.towerManager.render(gc, sbg, g, offset);
 		this.enemyManager.render(gc, sbg, g, offset);
 		this.gui.render(gc, sbg, g);
-		switch (this.currentState) {
+		switch (GameplayState.currentState) {
 			case WIN:
 			case LOSE:
 				this.gameOverUI.render(gc, sbg, g);
@@ -90,7 +91,7 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 		// sets the hover tile as the tile that the mouse is currently hovering over
 		this.getLevel().setHover(this.getLevel().getTileGridPosition(mx,my));
 		// this game state does different things when this game state is in different states
-		switch (this.currentState) {
+		switch (GameplayState.currentState) {
 			// this state is used when the player is trying to build(place) a tower
 			case PLACE:
 				// if the player clicks the left mouse button
@@ -105,15 +106,15 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 							if (((BuildableTile)hoverTile).isBuildable()){
 								// attempt to build a tower, depending on the tower type
 								if(this.gui.buildS && this.towerManager.addTower(this.level, hoverTile, "ST")){
-									this.currentState = GameState.NORMAL;
+									GameplayState.currentState = GameState.NORMAL;
 									this.gui.resetButtons();
 								}
 								else if(this.gui.buildR && this.towerManager.addTower(this.level, hoverTile, "RT")){
-									this.currentState = GameState.NORMAL;
+									GameplayState.currentState = GameState.NORMAL;
 									this.gui.resetButtons();
 								}
 								else if(this.gui.buildM && this.towerManager.addTower(this.level, hoverTile, "MGT")){
-									this.currentState = GameState.NORMAL;
+									GameplayState.currentState = GameState.NORMAL;
 									this.gui.resetButtons();
 								}
 							}
@@ -159,11 +160,11 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 		}
 		// if the player's health goes below zero, they lose
 		if (PlayerData.health <= 0) {
-			this.currentState = GameState.LOSE;
+			GameplayState.currentState = GameState.LOSE;
 		}
 		// if the player's health is above zero and there are no more waves and all enemies are dead, they win
 		else if (this.waveManager.isFinished() && this.enemyManager.isFinished())
-			this.currentState = GameState.WIN;
+			GameplayState.currentState = GameState.WIN;
 		
 	}
 
@@ -201,7 +202,7 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 	// passes the mouseClicked method of MouseListener to the game GUI
 	// passing the values depends on the current state of this game state
 	public void mouseClicked(int button, int x, int y, int clickCount) {
-		switch (this.currentState) {
+		switch (GameplayState.currentState) {
 		case PAUSED:
 		case PLACE:
 		case NORMAL:
@@ -230,6 +231,10 @@ public class GameplayState extends BasicGameState implements MouseListener, KeyL
 
 	public Camera getCamera() {
 		return this.camera;
+	}
+
+	public static GameState getCurrentState() {
+		return GameplayState.currentState;
 	}
 	
 }
