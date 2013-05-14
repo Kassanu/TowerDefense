@@ -71,6 +71,11 @@ public class WaveManager {
 					if (this.healthStart <= PlayerData.health)
 						PlayerData.increaseMultiplier(1);
 					this.healthStart = PlayerData.health;
+					
+					if ((this.currentWave + 1) == this.waves.length) {
+						this.wavesFinished = true;
+					}
+					
 				}
 				else {
 					this.waves[this.currentWave].update(gc, sbg, enemyManager, delta);

@@ -137,15 +137,16 @@ public abstract class Tower {
 		//render attackable tiles
 		if (GameplayState.getCurrentState() == GameplayState.GameState.PLACE) {
 			Vector2f attackablePos = null;
+			g.setColor(Color.blue);
 			for (Tile attackableTile : this.attackable) {
 				attackablePos = this.level.getTileWorldPosition(attackableTile); 
 				g.drawRect((attackablePos.x + offset.x) * TowerDefense.SCALE, (attackablePos.y + offset.y) * TowerDefense.SCALE, (TowerDefense.TILESIZE * TowerDefense.SCALE), (TowerDefense.TILESIZE * TowerDefense.SCALE));
 			}
 		}
-		if (this.attackingTarget != null) {
+		/*if (this.attackingTarget != null) {
 			Vector2f dist = (this.attackingTarget.getCenterPosition().copy()).sub(this.centerPosition);
 			g.drawLine(this.centerPosition.x,this.centerPosition.y , this.centerPosition.x+dist.x, this.centerPosition.y+dist.y);
-		}
+		}*/
 		
 	}
 	

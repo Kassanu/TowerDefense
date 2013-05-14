@@ -2,6 +2,9 @@ package com.eleventhhour.towerdefense;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -22,8 +25,8 @@ public abstract class Tile implements GameObject {
 	protected Vector2f centerPosition; // center position of the tile
 	protected TileType tileType; // the tile type of this tile
 	protected ArrayList<Enemy> enemiesOnTile; // arraylist of the enemies that are currently on this tile
-	protected ArrayList<TileEffect> tileEffects; // arraylist of the effects active on this tile
-	public ArrayList<Integer> tileEffectsToBeRemoved; // effects to be removed from the tile
+	protected HashMap<Long,TileEffect> tileEffects; // hash map of the effects active on this tile
+	public ArrayList<Long> tileEffectsToBeRemoved; // effects to be removed from the tile
 	// dimensions of the tile
 	protected int width;
 	protected int height;
@@ -38,8 +41,8 @@ public abstract class Tile implements GameObject {
 		this.centerPosition = new Vector2f(0,0);
 		this.tileType = tileType;
 		this.enemiesOnTile = new ArrayList<Enemy>();
-		this.tileEffects = new ArrayList<TileEffect>();
-		this.tileEffectsToBeRemoved = new ArrayList<Integer>();
+		this.tileEffects = new HashMap<Long,TileEffect>();
+		this.tileEffectsToBeRemoved = new ArrayList<Long>();
 		this.width = TowerDefense.TILESIZE;
 		this.height = TowerDefense.TILESIZE;
 		this.radius = TowerDefense.TILESIZE;
@@ -50,18 +53,15 @@ public abstract class Tile implements GameObject {
 	// updates the components in this class
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta) {
 		//this.collidable.update(gc, sbg, gs, delta);
-		int i = 0;
-		for (TileEffect effect : this.tileEffects) {
-			effect.update(gc, sbg, gs, delta);
-			if (effect.isOver()) {
-	        	this.tileEffectsToBeRemoved.add(i);
+		for (Entry<Long, TileEffect> effect : this.tileEffects.entrySet()) {
+			effect.getValue().update(gc, sbg, gs, delta);
+			if (effect.getValue().isOver()) {
+	        	this.tileEffectsToBeRemoved.add(effect.getKey());
 			}
-	        i++;
 		}
 		if (!this.tileEffectsToBeRemoved.isEmpty()) {
-			for (Integer eId : this.tileEffectsToBeRemoved)
+			for (Long eId : this.tileEffectsToBeRemoved)
 				this.removeEffect(eId);
-
 			this.tileEffectsToBeRemoved.clear();
 		}
 		this.enemiesOnTile.clear();
@@ -71,8 +71,8 @@ public abstract class Tile implements GameObject {
 	public void render(GameContainer gc, Graphics g, Vector2f offset) {
 		//((i * TowerDefense.TILESIZE) - offset.x) * TowerDefense.SCALE, ((j * TowerDefense.TILESIZE) - offset.y) * TowerDefense.SCALE
 		this.tileImage.draw((this.worldPosition.x + offset.x) * TowerDefense.SCALE,(this.worldPosition.y + offset.y) * TowerDefense.SCALE,TowerDefense.SCALE);
-		for (TileEffect effect : this.tileEffects) {
-			effect.render(gc, g, offset);
+		for (Entry<Long, TileEffect> effect : this.tileEffects.entrySet()) {
+			effect.getValue().render(gc, g, offset);
 		}
 	}
 	
@@ -92,7 +92,7 @@ public abstract class Tile implements GameObject {
 		return this.enemiesOnTile;
 	}
 	
-	public ArrayList<TileEffect> getTileEffects() {
+	public HashMap<Long, TileEffect> getTileEffects() {
 		return this.tileEffects;
 	}
 	
@@ -153,11 +153,11 @@ public abstract class Tile implements GameObject {
 	}
 
 	public void addEffect(TileEffect tileEffect) {
-		this.tileEffects.add(tileEffect);		
+		this.tileEffects.put(tileEffect.getId(), tileEffect);		
 	}
 	
-	public void removeEffect(int index) {
-		this.tileEffects.remove(index);
+	public void removeEffect(Long eId) {
+		this.tileEffects.remove(eId);
 	}
 	
 }

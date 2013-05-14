@@ -3,7 +3,9 @@ package com.eleventhhour.towerdefense;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -123,16 +125,16 @@ public class Enemy implements GameObject {
 	public void update(GameContainer gc, StateBasedGame sbg, GameplayState gs, int delta){
 		Tile tile = gs.getLevel().getTileAtGridPosition(this.tilePosition);
 		//System.out.println(tile);
-		ArrayList<TileEffect> effects = tile.getTileEffects();
+		HashMap<Long, TileEffect> effects = tile.getTileEffects();
 		this.currentSpeed = this.maxSpeed;
 		//System.out.println(effects);
-		for (TileEffect tileEffect : effects) {
-			switch (tileEffect.getEffectType()) {
+		for (Entry<Long, TileEffect> effect : effects.entrySet()) {
+			switch (effect.getValue().getEffectType()) {
 				case DAMAGE:
-					this.getAttacked((int) tileEffect.getModifier());
+					this.getAttacked((int) effect.getValue().getModifier());
 					break;
 				case SPEED:
-					this.currentSpeed /= (int) tileEffect.getModifier(); 
+					this.currentSpeed /= (int) effect.getValue().getModifier(); 
 					break;
 			}
 		}
