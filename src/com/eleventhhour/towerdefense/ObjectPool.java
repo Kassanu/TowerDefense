@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public abstract class ObjectPool {
 
-	  private static final int DEFAULTSIZE = 32;
+	  private static final int DEFAULTSIZE = 64;
 	  private int size;
 	  protected ArrayList<Object> thePool;
 
